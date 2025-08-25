@@ -1,0 +1,12 @@
+<% content_for :title, "Editing return request" %>
+
+<h1>Editing return request</h1>
+
+<%= render "form", return_request: @return_request %>
+
+<br>
+
+<div>
+  <%= link_to "Show this return request", @return_request %> |
+  <%= link_to "Back to return requests", return_requests_path %>
+</div>

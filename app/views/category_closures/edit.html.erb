@@ -1,0 +1,12 @@
+<% content_for :title, "Editing category closure" %>
+
+<h1>Editing category closure</h1>
+
+<%= render "form", category_closure: @category_closure %>
+
+<br>
+
+<div>
+  <%= link_to "Show this category closure", @category_closure %> |
+  <%= link_to "Back to category closures", category_closures_path %>
+</div>

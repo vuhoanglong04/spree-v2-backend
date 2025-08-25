@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Return requests" %>
+
+<h1>Return requests</h1>
+
+<div id="return_requests">
+  <% @return_requests.each do |return_request| %>
+    <%= render return_request %>
+    <p>
+      <%= link_to "Show this return request", return_request %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New return request", new_return_request_path %>
