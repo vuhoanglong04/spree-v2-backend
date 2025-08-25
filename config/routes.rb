@@ -1,27 +1,9 @@
 Rails.application.routes.draw do
-  resources :return_requests
-  resources :refunds
-  resources :payments
-  resources :promotions
-  resources :order_items
-  resources :orders
-  resources :cart_items
-  resources :carts
-  resources :product_variant_attr_values
-  resources :attribute_values
-  resources :attributes
-  resources :product_variants
-  resources :product_images
-  resources :product_categories
-  resources :products
-  resources :category_closures
-  resources :categories
-  resources :user_roles
-  resources :role_permissions
-  resources :permissions
-  resources :roles
-  resources :user_identities
-  resources :user_profiles
+  namespace :api do
+    namespace :admin do
+      resource :account_users
+    end
+  end
   devise_for :account_users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
