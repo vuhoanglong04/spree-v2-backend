@@ -1,0 +1,2 @@
+class ProductVariantAttrValue < ApplicationRecord
+end

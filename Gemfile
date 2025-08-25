@@ -62,13 +62,44 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "pg", "~> 1.5"
+gem "paranoia"
 
-gem 'dotenv-rails', '~> 3.1', '>= 3.1.8'
+gem "devise", "~> 4.9"
 
-gem 'sidekiq', '~> 8.0', '>= 8.0.7'
+gem "devise-jwt", "~> 0.12.1"
 
-gem 'devise', '~> 4.9', '>= 4.9.4'
+gem "faker", "~> 3.5"
+
+gem "aws-sdk-s3", "~> 1.194"
+
+gem "prism", "~> 1.4"
 
 gem 'pundit', '~> 2.5'
 
+gem 'sendgrid-ruby'
+
+gem 'dotenv-rails'
+
+gem 'stripe'
+
+gem 'stripe_event'
+
+gem 'rack-cors', require: 'rack/cors'
+
+gem 'sidekiq'
+
+gem 'sidekiq-cron'
+
+gem 'redis'
+
+gem 'elasticsearch-model'
+
+gem 'elasticsearch-rails'
+
+gem 'omniauth'
+
+gem 'omniauth-google-oauth2'
+
+gem 'omniauth-rails_csrf_protection'
+
+gem 'pg'

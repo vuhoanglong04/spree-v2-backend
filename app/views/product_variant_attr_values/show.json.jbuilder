@@ -1,0 +1,1 @@
+json.partial! "product_variant_attr_values/product_variant_attr_value", product_variant_attr_value: @product_variant_attr_value

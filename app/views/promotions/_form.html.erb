@@ -1,0 +1,17 @@
+<%= form_with(model: promotion) do |form| %>
+  <% if promotion.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(promotion.errors.count, "error") %> prohibited this promotion from being saved:</h2>
+
+      <ul>
+        <% promotion.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,2 @@
+class CategoryClosure < ApplicationRecord
+end

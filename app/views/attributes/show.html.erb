@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @attribute %>
+
+<div>
+  <%= link_to "Edit this attribute", edit_attribute_path(@attribute) %> |
+  <%= link_to "Back to attributes", attributes_path %>
+
+  <%= button_to "Destroy this attribute", @attribute, method: :delete %>
+</div>

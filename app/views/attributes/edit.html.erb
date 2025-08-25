@@ -1,0 +1,12 @@
+<% content_for :title, "Editing attribute" %>
+
+<h1>Editing attribute</h1>
+
+<%= render "form", attribute: @attribute %>
+
+<br>
+
+<div>
+  <%= link_to "Show this attribute", @attribute %> |
+  <%= link_to "Back to attributes", attributes_path %>
+</div>

@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Attributes" %>
+
+<h1>Attributes</h1>
+
+<div id="attributes">
+  <% @attributes.each do |attribute| %>
+    <%= render attribute %>
+    <p>
+      <%= link_to "Show this attribute", attribute %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New attribute", new_attribute_path %>
