@@ -61,3 +61,14 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "pg", "~> 1.5"
+
+gem 'dotenv-rails', '~> 3.1', '>= 3.1.8'
+
+gem 'sidekiq', '~> 8.0', '>= 8.0.7'
+
+gem 'devise', '~> 4.9', '>= 4.9.4'
+
+gem 'pundit', '~> 2.5'
+
