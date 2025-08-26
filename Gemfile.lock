@@ -408,7 +408,6 @@ GEM
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
-    ruby_http_client (3.5.5)
     rubyzip (3.0.2)
     securerandom (0.4.1)
     selenium-webdriver (4.35.0)
@@ -417,8 +416,6 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
-    sendgrid-ruby (6.7.0)
-      ruby_http_client (~> 3.4)
     sidekiq (8.0.7)
       connection_pool (>= 2.5.0)
       json (>= 2.9.0)
@@ -552,7 +549,6 @@ DEPENDENCIES
   redis
   rubocop-rails-omakase
   selenium-webdriver
-  sendgrid-ruby
   sidekiq
   sidekiq-cron
   solid_cable

@@ -8,10 +8,10 @@ module ResponseHandler
     response_body = {
       status: response_status(http_status, errors),
       message: message || default_message(http_status),
+      errors: errors.present? ? errors : nil,
       data: data,
       meta: meta
     }
-    response_body[:errors] = Array(errors).map(&:to_s) if errors.present?
 
     render json: response_body.compact, status: http_status
   end

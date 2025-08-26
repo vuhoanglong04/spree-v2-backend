@@ -76,8 +76,6 @@ gem "prism", "~> 1.4"
 
 gem 'pundit', '~> 2.5'
 
-gem 'sendgrid-ruby'
-
 gem 'dotenv-rails'
 
 gem 'stripe'
