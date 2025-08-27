@@ -1,6 +1,12 @@
 class Api::Admin::AccountUsersController < Api::BaseController
+  before_action :authenticate_account_user!
+
+  def test
+    render_response(data: "OK", message: "OKOKOK", status: 200)
+  end
+
   def index
-    
+
   end
 
   # GET /account_users/1 or /account_users/1.json

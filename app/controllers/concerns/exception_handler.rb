@@ -5,6 +5,5 @@ module ExceptionHandler
     rescue_from AuthenticationError, ValidationError do |e|
       render_response(message: e.message, errors: e.errors, status: 401)
     end
-
   end
 end

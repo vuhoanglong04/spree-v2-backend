@@ -4,7 +4,9 @@ class AccountUser < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :trackable,
-         :omniauthable, omniauth_providers: [:google_oauth2]
+         :jwt_authenticatable,
+         :omniauthable, omniauth_providers: [:google_oauth2],
+         jwt_revocation_strategy: JwtRedisDenyList
 
   enum :status, { active: 0, disabled: 1, blocked: 2 }
 end

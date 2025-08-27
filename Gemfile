@@ -66,7 +66,7 @@ gem "paranoia"
 
 gem "devise", "~> 4.9"
 
-gem "devise-jwt", "~> 0.12.1"
+gem "devise-jwt"
 
 gem "faker", "~> 3.5"
 
@@ -101,3 +101,5 @@ gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
 
 gem 'pg'
+
+gem 'active_model_serializers'
