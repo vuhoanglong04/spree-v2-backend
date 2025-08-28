@@ -37,7 +37,7 @@ role_map = roles.index_by(&:name)
 puts "Creating Users..."
 
 users_data = [
-  { email: "longvulinhhoang@gmail.com", password: "123456", status: :disabled, role: "admin" },
+  { email: "longvulinhhoang@gmail.com", password: "123456", status: :active, role: "admin" },
   { email: "manager@example.com", password: "password", status: :disabled, role: "manager" }
 ]
 

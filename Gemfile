@@ -66,7 +66,7 @@ gem "paranoia"
 
 gem "devise", "~> 4.9"
 
-gem "devise-jwt", "~> 0.12.1"
+gem "devise-jwt"
 
 gem "faker", "~> 3.5"
 
@@ -75,8 +75,6 @@ gem "aws-sdk-s3", "~> 1.194"
 gem "prism", "~> 1.4"
 
 gem 'pundit', '~> 2.5'
-
-gem 'sendgrid-ruby'
 
 gem 'dotenv-rails'
 
@@ -103,3 +101,6 @@ gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
 
 gem 'pg'
+
+gem 'active_model_serializers'
+
