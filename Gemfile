@@ -103,3 +103,4 @@ gem 'omniauth-rails_csrf_protection'
 gem 'pg'
 
 gem 'active_model_serializers'
+

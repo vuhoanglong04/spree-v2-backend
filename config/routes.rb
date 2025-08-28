@@ -4,8 +4,6 @@ Rails.application.routes.draw do
       resource :account_users
     end
   end
-  get "test", to: "api/admin/account_users#test"
-
   devise_for :account_users, path: "api/auth", controllers: {
     sessions: 'api/auth/sessions',
     registrations: 'api/auth/registrations',
@@ -14,9 +12,24 @@ Rails.application.routes.draw do
     omniauth_callbacks: 'api/auth/omniauth_callbacks'
   }
   devise_scope :account_user do
-    post 'api/auth/sign_out', to: 'api/auth/sessions#destroy'
-    post "api/auth/refresh", to: "api/auth/sessions#refresh"
+    namespace :api do
+      namespace :auth do
+        post "sign_out", to: "sessions#destroy"
+        post "refresh", to: "sessions#refresh"
+
+        post "confirm_email", to: "confirmations#confirm_email"
+        post "resend_confirmation", to: "confirmations#resend_confirmation_instructions"
+
+        post "reset_password", to: "passwords#create"
+        post "check_reset_password_token", to: "passwords#check_reset_password_token"
+        patch "reset_password", to: "passwords#update_password"
+
+        get "get_google_oauth2_url", to: "omniauth_callbacks#get_google_oauth2_url"
+        get "google_oauth2/callback", to: "omniauth_callbacks#callback"
+      end
+    end
   end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

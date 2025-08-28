@@ -324,4 +324,10 @@ Devise.setup do |config|
     }
   end
   config.omniauth :google_oauth2, ENV['GOOGLE_CLIENT_ID'], ENV['GOOGLE_CLIENT_SECRET'], {}
+
+  config.mailer = "CustomDeviseMailer"
+
+  def Devise.friendly_token(length = 6)
+    SecureRandom.random_number(10**length).to_s.rjust(length, "0")
+  end
 end

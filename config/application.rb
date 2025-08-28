@@ -26,5 +26,6 @@ module SpreeV2Backend
 
     config.middleware.insert_before Warden::Manager, JwtErrorHandler
 
+    config.active_job.queue_adapter = :sidekiq
   end
 end

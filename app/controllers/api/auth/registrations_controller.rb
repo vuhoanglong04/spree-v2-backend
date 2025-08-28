@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Api::Auth::RegistrationsController < Devise::RegistrationsController
+  include ResponseHandler
+  include ExceptionHandler
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
 
@@ -10,9 +12,21 @@ class Api::Auth::RegistrationsController < Devise::RegistrationsController
   # end
 
   # POST /resource
-  # def create
-  #   super
-  # end
+  def create
+    SignupForm.new(sign_up_params)
+    build_resource(sign_up_params)
+    if resource.save
+      render_response(data: {
+        user: ActiveModelSerializers::SerializableResource.new(resource, serializer: AccountUserSerializer),
+        refresh_token: RefreshTokenService.issue(resource.id)
+      },
+                      status: 201,
+                      message: "Signup successfully. Please confirm your email address before continuing."
+      )
+    else
+      raise ActiveRecord::RecordInvalid.new(resource)
+    end
+  end
 
   # GET /resource/edit
   # def edit
@@ -59,4 +73,10 @@ class Api::Auth::RegistrationsController < Devise::RegistrationsController
   # def after_inactive_sign_up_path_for(resource)
   #   super(resource)
   # end
+
+  private
+
+  def sign_up_params
+    params.require(:account_user).permit(:email, :password, :password_confirmation)
+  end
 end
