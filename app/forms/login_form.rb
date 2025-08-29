@@ -2,6 +2,7 @@
 
 class LoginForm
   include ActiveModel::Model
+  include CustomValidateForm
   attr_accessor :email, :password
   validates :email, presence: { message: "Email is required" },
             format: { with: URI::MailTo::EMAIL_REGEXP, message: "Invalid email format" }
@@ -10,9 +11,5 @@ class LoginForm
   def initialize(attributes = {})
     super(attributes)
     validate!
-  end
-
-  def validate!
-    raise ValidationError.new("Validation failed", errors) unless valid?
   end
 end

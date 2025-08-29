@@ -9,4 +9,5 @@ class Order < ApplicationRecord
     returned: 6,
     return_requested: 7
   }
+  has_many :order_items
 end

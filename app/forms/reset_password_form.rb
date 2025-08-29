@@ -2,6 +2,8 @@
 
 class ResetPasswordForm
   include ActiveModel::Model
+  include CustomValidateForm
+
   attr_accessor :password, :password_confirmation, :email
   validates :email,
             presence: { message: "Email is required" },
@@ -17,11 +19,6 @@ class ResetPasswordForm
     super(attributes)
     validate!
   end
-
-  def validate!
-    raise ValidationError.new("Validation failed", errors) unless valid?
-  end
-
   def passwords_match
     return if password == password_confirmation
     errors.add(:password_confirmation, "Password doesn't match")

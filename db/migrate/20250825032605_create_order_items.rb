@@ -1,8 +1,8 @@
 class CreateOrderItems < ActiveRecord::Migration[8.0]
   def change
     create_table :order_items, id: :uuid do |t|
-      t.integer :order_id, null: false
-      t.integer :product_variant_id, null: false
+      t.uuid :order_id, null: false
+      t.uuid :product_variant_id, null: false
       t.string :name, null: false
       t.string :sku, null: false
       t.integer :quantity, null: false

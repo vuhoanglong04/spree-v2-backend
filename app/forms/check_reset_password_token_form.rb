@@ -2,6 +2,8 @@
 
 class CheckResetPasswordTokenForm
   include ActiveModel::Model
+  include CustomValidateForm
+
   attr_accessor :email, :reset_password_token
   validates :email,
             presence: { message: "Email is required" },
@@ -12,9 +14,5 @@ class CheckResetPasswordTokenForm
   def initialize(email, reset_password_token)
     super(email: email, reset_password_token: reset_password_token)
     validate!
-  end
-
-  def validate!
-    raise ValidationError.new("Validation failed", errors) unless valid?
   end
 end

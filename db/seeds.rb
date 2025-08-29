@@ -1,220 +1,173 @@
 # db/seeds.rb
-require "faker"
-puts "Clearing data..."
+require "securerandom"
 
-# Xóa bảng liên quan (tránh vi phạm FK)
-RolePermission.delete_all
-UserRole.delete_all
-Permission.delete_all
-AccountUser.delete_all
-Role.delete_all
+puts "Seeding database..."
 
-ProductImage.delete_all
-ProductVariantAttrValue.delete_all
-ProductVariant.delete_all
-Product.delete_all
-Category.delete_all
-AttributeValue.delete_all
-Attribute.delete_all
-Promotion.delete_all
-OrderItem.delete_all
-Order.delete_all
-Payment.delete_all
+# Clear existing data
+[
+  AccountUser, UserProfile, Role, Permission, UserRole, RolePermission,
+  Category, CategoryClosure, Product, ProductImage, ProductVariant,
+  Attribute, AttributeValue, ProductVariantAttrValue,
+  Cart, CartItem,
+  Order, OrderItem, Payment, Refund, ReturnRequest,
+  Promotion
+].each(&:delete_all)
 
-puts "Seeding data..."
-
-# -------------------------------
-# ROLES
-# -------------------------------
-roles = %w[admin manager support_agent customer].map do |r|
-  Role.find_or_create_by!(name: r)
-end
-role_map = roles.index_by(&:name)
-
-# -------------------------------
-# USERS & USER_ROLES
-# -------------------------------
-puts "Creating Users..."
-
-users_data = [
-  { email: "longvulinhhoang@gmail.com", password: "123456", status: :active, role: "admin" },
-  { email: "manager@example.com", password: "password", status: :disabled, role: "manager" }
-]
-
-# Add agents
-2.times { |i| users_data << { email: "agent#{i + 1}@example.com", password: "password", status: :active, role: "support_agent" } }
-
-# Add customers
-5.times { users_data << { email: Faker::Internet.unique.email, password: "123456", status: :active, role: "customer" } }
-
-users = users_data.map do |u|
-  account = AccountUser.find_or_create_by!(email: u[:email]) do |a|
-    a.password = u[:password]
-    a.status = u[:status]
-  end
-
-  # Ensure account saved
-  account.save! if account.new_record?
-
-  # Assign role safely
-  role = role_map[u[:role]]
-  unless UserRole.exists?(user_id: account.id, role_id: role.id)
-    UserRole.create!(user_id: account.id, role_id: role.id)
-  end
-
-  account
+# ---- Account Users (15) ----
+account_users = 15.times.map do |i|
+  user = AccountUser.create(
+    email: "user#{i + 1}@example.com",
+    password: "123456", # Normally Devise encrypts
+    status: 0,
+    confirmed_at: Time.now
+  )
+  user.skip_confirmation!
+  user.save
+  user
 end
 
-# -------------------------------
-# PERMISSIONS
-# -------------------------------
-puts "Creating Permissions..."
-subjects_with_soft_delete = %w[products product_variants categories promotions attributes attribute_values]
-subjects_without_soft_delete = %w[orders users carts cart_items payments refunds return_requests]
-
-permissions_data = []
-
-%w[index show create update destroy].each do |action|
-  (subjects_with_soft_delete + subjects_without_soft_delete).each do |subject|
-    permissions_data << { action: action, subject: subject }
-  end
+# ---- Roles & Permissions (5 each) ----
+roles = %w[admin manager staff customer guest].map do |role|
+  Role.create!(name: role.capitalize, description: "#{role} role")
 end
 
-subjects_with_soft_delete.each { |subject| permissions_data << { action: "restore", subject: subject } }
-permissions_data << { action: "authorize", subject: "users" }
-
-permissions = permissions_data.map { |p| Permission.find_or_create_by!(action: p[:action], subject: p[:subject]) }
-
-# -------------------------------
-# ROLE_PERMISSIONS
-# -------------------------------
-puts "Assigning permissions..."
-role_permissions_map = {
-  "admin" => permissions,
-  "manager" => permissions.select { |p| %w[products product_variants categories promotions orders].include?(p.subject) },
-  "support_agent" => permissions.select { |p| %w[orders carts cart_items].include?(p.subject) && %w[index show].include?(p.action) },
-  "customer" => permissions.select { |p| %w[products orders carts cart_items].include?(p.subject) && %w[index show create].include?(p.action) }
-}
-
-role_permissions_map.each do |role_name, perms|
-  role = role_map[role_name]
-  existing_permission_ids = RolePermission.where(role_id: role.id).pluck(:permission_id)
-  new_permission_ids = perms.map(&:id) - existing_permission_ids
-
-  # Bulk insert safely
-  new_permission_ids.each do |pid|
-    RolePermission.create!(role_id: role.id, permission_id: pid)
-  end
+permissions = %w[read write update delete manage].map do |action|
+  Permission.create!(action:, subject: "Product", description: "#{action} permission")
 end
 
-# -------------------------------
-# CATEGORIES
-# -------------------------------
-puts "Creating Categories..."
-categories = 5.times.map do
-  Category.find_or_create_by!(name: Faker::Commerce.unique.department(max: 1, fixed_amount: true)) do |c|
-    c.slug = Faker::Internet.unique.slug
-    c.position = rand(1..10)
-  end
+# Assign roles to users
+account_users.each_with_index do |user, i|
+  UserRole.create!(account_user_id: user.id, role_id: roles[i % roles.size].id)
 end
 
-# -------------------------------
-# ATTRIBUTES & ATTRIBUTE VALUES
-# -------------------------------
-puts "Creating Attributes..."
-colors = Attribute.find_or_create_by!(name: "Color") { |a| a.slug = "color" }
-sizes = Attribute.find_or_create_by!(name: "Size") { |a| a.slug = "size" }
-
-%w[Red Blue Green Yellow].each { |c| AttributeValue.find_or_create_by!(attribute_id: colors.id, value: c) }
-%w[S M L XL].each { |s| AttributeValue.find_or_create_by!(attribute_id: sizes.id, value: s) }
-
-# -------------------------------
-# PRODUCTS & VARIANTS
-# -------------------------------
-puts "Creating Products..."
-50.times do
-  product = Product.find_or_create_by!(name: Faker::Commerce.unique.product_name) do |p|
-    p.slug = Faker::Internet.unique.slug
-    p.description = Faker::Lorem.paragraph(sentence_count: 2)
-    p.brand = Faker::Company.name
-    p.favourite_count = rand(0..1000)
-  end
-
-  (categories.sample(rand(1..2)) - product.categories).each { |cat| product.categories << cat }
-
-  1.upto(rand(1..3)) do |i|
-    variant = ProductVariant.find_or_create_by!(product_id: product.id, sku: "#{product.name.parameterize}-#{i}") do |v|
-      v.name = "#{product.name} Variant #{i}"
-      v.origin_price = Faker::Commerce.price(range: 10..100)
-      v.price = Faker::Commerce.price(range: 5..90)
-      v.stock_qty = rand(0..50)
-    end
-
-    attr_id = [colors.id, sizes.id].sample
-    value = AttributeValue.where(attribute_id: attr_id).sample
-    ProductVariantAttrValue.find_or_create_by!(product_variant_id: variant.id, attribute_id: attr_id, attribute_value_id: value.id)
-
-    1.upto(rand(1..3)) do
-      ProductImage.find_or_create_by!(product_id: product.id, url: Faker::Avatar.unique.image(slug: product.name.parameterize, size: "300x300", format: "png")) do |img|
-        img.alt = product.name
-        img.position = rand(1..5)
-      end
-    end
-  end
+# Assign permissions to roles
+roles.each_with_index do |role, i|
+  RolePermission.create!(role_id: role.id, permission_id: permissions[i % permissions.size].id)
 end
 
-# -------------------------------
-# PROMOTIONS
-# -------------------------------
-puts "Creating Promotions..."
-5.times do
-  Promotion.find_or_create_by!(code: Faker::Alphanumeric.unique.alphanumeric(number: 8).upcase) do |promo|
-    promo.description = Faker::Marketing.buzzwords
-    promo.type = rand(0..2)
-    promo.value = Faker::Commerce.price(range: 5..50)
-    promo.start_date = Faker::Date.backward(days: 30)
-    promo.end_date = Faker::Date.forward(days: 30)
-    promo.usage_limit = rand(1..100)
-    promo.per_user_limit = rand(1..5)
-    promo.min_order_amount = Faker::Commerce.price(range: 50..200)
-  end
+# ---- User Profiles (5 only, attach to first 5 users) ----
+account_users.first(5).each do |user|
+  UserProfile.create!(
+    account_user_id: user.id,
+    full_name: "User #{user.email}",
+    phone: "555-01#{rand(10..99)}"
+  )
 end
 
-# -------------------------------
-# ORDERS & ITEMS & PAYMENTS
-# -------------------------------
-puts "Creating Orders..."
-customer_accounts = users.select { |u| u.roles.include?(role_map["customer"]) }
-
-customer_accounts.each do |user|
-  rand(1..3).times do
-    order = Order.create!(user_id: user.id, currency: "USD", status: Order.statuses.keys.sample, total_amount: 0)
-
-    product_variants = ProductVariant.all.sample(rand(1..3))
-    product_variants.each do |variant|
-      quantity = rand(1..5)
-      OrderItem.create!(
-        order_id: order.id,
-        product_variant_id: variant.id,
-        name: variant.name,
-        sku: variant.sku,
-        quantity: quantity,
-        unit_price: variant.price,
-        product_variant_snapshot: variant.attributes.to_json
-      )
-      order.total_amount += variant.price * quantity
-    end
-    order.save!
-
-    Payment.create!(
-      order_id: order.id,
-      stripe_payment_id: Faker::Alphanumeric.alphanumeric(number: 10),
-      stripe_charge_id: Faker::Alphanumeric.alphanumeric(number: 10),
-      amount: order.total_amount,
-      currency: "USD",
-      status: Payment.statuses.keys.sample
-    )
-  end
+# ---- Categories (5) ----
+categories = %w[Electronics Fashion Books Home Sports].map do |name|
+  Category.create!(name:, slug: name.downcase)
 end
 
-puts "Seeding completed!"
+# ---- Products (15) ----
+products = 15.times.map do |i|
+  p = Product.create(
+    name: "Product #{i + 1}",
+    slug: "product-#{i + 1}",
+    description: "This is the description for product #{i + 1}",
+    brand: ["Nike", "Sony", "Apple", "Samsung", "Adidas"].sample
+  )
+  p.save
+  p
+end
+
+# Assign categories to products
+categories.each_with_index do |category, i|
+  product = products[i] # one-to-one mapping
+  break unless product
+  ProductCategory.create!(product_id: product.id, category_id: category.id)
+end
+# ---- Product Variants (5) ----
+product_variants = products.first(5).map do |product|
+  v = ProductVariant.create(
+    product_id: product.id,
+    sku: "SKU-#{SecureRandom.hex(3)}",
+    name: "#{product.name} Variant",
+    origin_price: rand(50..200),
+    price: rand(30..150),
+    stock_qty: rand(10..100)
+  )
+  v.save
+  v
+end
+
+# ---- Attributes & Values (5 each) ----
+attributes = %w[Color Size Material Brand Style].map do |attr|
+  Attribute.create!(name: attr, slug: attr.downcase)
+end
+
+attribute_values = attributes.map do |attr|
+  5.times.map { |i| AttributeValue.create!(attribute_id: attr.id, value: "#{attr.name} #{i + 1}") }
+end.flatten
+
+# Assign attribute values to variants
+product_variants.each do |variant|
+  attr = attributes.sample
+  val = attribute_values.select { |v| v.attribute_id == attr.id }.sample
+  ProductVariantAttrValue.create!(product_variant_id: variant.id, attribute_id: attr.id, attribute_value_id: val.id)
+end
+
+# ---- Carts & Cart Items ----
+carts = account_users.first(5).map do |user|
+  Cart.create!(account_user_id: user.id)
+end
+
+carts.each do |cart|
+  CartItem.create!(
+    cart_id: cart.id,
+    product_variant_id: product_variants.sample.id,
+    quantity: rand(1..3)
+  )
+end
+
+# ---- Orders, Order Items, Payments, Refunds, Return Requests ----
+orders = account_users.first(5).map do |user|
+  Order.create!(account_user_id: user.id, status: 1, total_amount: 100)
+end
+
+orders.each do |order|
+  variant = product_variants.sample
+  OrderItem.create!(
+    order_id: order.id,
+    product_variant_id: variant.id,
+    name: variant.name,
+    sku: variant.sku,
+    quantity: 1,
+    unit_price: variant.price
+  )
+
+  payment = Payment.create!(
+    order_id: order.id,
+    stripe_payment_id: SecureRandom.hex(8),
+    amount: order.total_amount,
+    status: 1
+  )
+
+  Refund.create!(
+    payment_id: payment.id,
+    stripe_refund_id: SecureRandom.hex(8),
+    amount: 10,
+    status: 1
+  )
+
+  ReturnRequest.create!(
+    order_id: order.id,
+    order_item_id: order.order_items.first.id,
+    quantity: 1,
+    reason: "Damaged item",
+    status: 0
+  )
+end
+
+# ---- Promotions ----
+5.times do |i|
+  Promotion.create!(
+    code: "PROMO#{i + 1}",
+    description: "Discount promo #{i + 1}",
+    value: rand(5..20),
+    start_date: Time.now,
+    end_date: Time.now + 30.days
+  )
+end
+
+puts "✅ Seeding completed!"
