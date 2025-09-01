@@ -21,9 +21,9 @@ class AccountUser < ApplicationRecord
             length: { minimum: 6, message: "Password is too short (minimum is 6 characters)" }
 
   # Relationships
-  has_many :user_identities
+  has_many :user_identities, dependent: :destroy
+  has_one :user_profile, dependent: :destroy
   has_many :user_roles
   has_many :roles, through: :user_roles
-  has_one :user_profile, dependent: :destroy
   accepts_nested_attributes_for :user_profile
 end

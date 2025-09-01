@@ -11,7 +11,7 @@ module ExceptionHandler
     end
 
     rescue_from ActiveRecord::RecordNotFound do |e|
-      render_response(message: "Account not found", errors: e.record.errors.full_messages, status: 401)
+      render_response(message: "Account not found", status: 401)
     end
   end
 end

@@ -56,11 +56,27 @@ class Api::Admin::AccountUsersController < Api::BaseController
 
   # PATCH/PUT /account_users/1 or /account_users/1.json
   def update
-
+    UpdateAccountUserForm.new(account_user_params)
+    account_user = AccountUser.find_by!(id: params[:id])
+    S3UploadService.delete_by_url(account_user.user_profile.avatar_url) if account_user.user_profile.avatar_url.present?
+    if account_user.update(account_user_params)
+      avatar_url = S3UploadService.upload(account_user_params[:user_profile_attributes][:avatar_url], "account_users")
+      account_user.user_profile.avatar_url = avatar_url
+      account_user.save
+      render_response(data: {
+        account_user: ActiveModelSerializers::SerializableResource.new(account_user, serializer: AccountUserSerializer)
+      },
+                      message: "Update account user successfully",
+                      status: 200)
+    else
+      raise ValidationError.new("Validation failed", account_user.errors.to_hash(full_messages: true))
+    end
   end
 
   # DELETE /account_users/1 or /account_users/1.json
   def destroy
+    AccountUser.find_by!(id: params[:id]).destroy
+    render_response(message: "Destroy account user successfully", status: 200)
   end
 
   private
@@ -68,7 +84,7 @@ class Api::Admin::AccountUsersController < Api::BaseController
   def account_user_params
     params
       .require(:account_user)
-      .permit(:email, :status, :password, :password_confirmation,
+      .permit(:id, :email, :status, :password, :password_confirmation,
               user_profile_attributes: [:full_name, :phone, :avatar_url, :locale, :time_zone])
   end
 end
