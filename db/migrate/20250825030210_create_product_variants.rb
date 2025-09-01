@@ -1,7 +1,7 @@
 class CreateProductVariants < ActiveRecord::Migration[8.0]
   def change
     create_table :product_variants, id: :uuid do |t|
-      t.integer :product_id, null: false
+      t.uuid :product_id, null: false
       t.string :sku, null: false
       t.string :name, null: false
       t.decimal :origin_price, precision: 10, scale: 2, default: 0.0

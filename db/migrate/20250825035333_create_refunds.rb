@@ -1,7 +1,7 @@
 class CreateRefunds < ActiveRecord::Migration[8.0]
   def change
     create_table :refunds, id: :uuid do |t|
-      t.integer :payment_id, null: false
+      t.uuid :payment_id, null: false
       t.string :stripe_refund_id, null: false
       t.decimal :amount, precision: 10, scale: 2, null: false
       t.integer :status, default: 0

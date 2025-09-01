@@ -2,6 +2,8 @@
 
 class SignupForm
   include ActiveModel::Model
+  include CustomValidateForm
+
   attr_accessor :email, :password, :password_confirmation
   validates :email,
             presence: { message: "Email is required" },
@@ -18,9 +20,7 @@ class SignupForm
     validate!
   end
 
-  def validate!
-    raise ValidationError.new("Validation failed", errors) unless valid?
-  end
+  private
 
   def passwords_match
     return if password == password_confirmation

@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :admin do
-      resource :account_users
+      resources :account_users
     end
   end
+
   devise_for :account_users, path: "api/auth", controllers: {
     sessions: 'api/auth/sessions',
     registrations: 'api/auth/registrations',

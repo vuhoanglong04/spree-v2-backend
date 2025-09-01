@@ -104,3 +104,9 @@ gem 'pg'
 
 gem 'active_model_serializers'
 
+gem 'kaminari'
+
+gem 'file_validators'
+
+
+

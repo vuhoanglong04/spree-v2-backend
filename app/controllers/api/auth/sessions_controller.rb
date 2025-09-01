@@ -15,7 +15,7 @@ class Api::Auth::SessionsController < Devise::SessionsController
     if resource.present?
       sign_in(resource_name, resource)
       render_response(data: {
-        user: ActiveModelSerializers::SerializableResource.new(resource, serializer: AccountUserSerializer),
+        user: ActiveModelSerializers::SerializableResource.new(resource, serializer: LoginSerializer),
         refresh_token: RefreshTokenService.issue(resource.id)
       },
                       message: "Login successful",
