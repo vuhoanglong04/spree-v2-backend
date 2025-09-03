@@ -1,18 +1,29 @@
-class Api::Admin::Auth::PermissionsController < ApplicationController
-  before_action :set_permission, only: %i[ show edit update destroy ]
+class Api::Admin::PermissionsController < Api::BaseController
 
   # GET /permissions or /permissions.json
   def index
-    @permissions = Permission.all
+    page = params[:page] ||= 1
+    per_page = params[:per_page] ||= 5
+    permissions = Permission.all.page(page).per(per_page)
+    render_response(data: {
+      permissions: permissions
+    },
+                    message: "Get all permissions successfully.",
+                    status: 200)
   end
 
   # GET /permissions/1 or /permissions/1.json
   def show
+    permission = Permission.find_by!(id: params[:id])
+    render_response(data: {
+      permissions: permission
+    },
+                    message: "Get permission successfully.",
+                    status: 200)
   end
 
   # GET /permissions/new
   def new
-    @permission = Permission.new
   end
 
   # GET /permissions/1/edit
@@ -21,51 +32,44 @@ class Api::Admin::Auth::PermissionsController < ApplicationController
 
   # POST /permissions or /permissions.json
   def create
-    @permission = Permission.new(permission_params)
-
-    respond_to do |format|
-      if @permission.save
-        format.html { redirect_to @permission, notice: "Permission was successfully created." }
-        format.json { render :show, status: :created, location: @permission }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @permission.errors, status: :unprocessable_entity }
-      end
+    permission = Permission.new(permission_params)
+    if permission.save
+      render_response(data: {
+        permission: permission
+      },
+                      message: "Create permission successfully",
+                      status: 201
+      )
+    else
+      raise ValidationError.new("Validation failed", permission.errors.to_hash(full_messages: true))
     end
   end
 
   # PATCH/PUT /permissions/1 or /permissions/1.json
   def update
-    respond_to do |format|
-      if @permission.update(permission_params)
-        format.html { redirect_to @permission, notice: "Permission was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @permission }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @permission.errors, status: :unprocessable_entity }
-      end
+    permission = Permission.find_by!(id: params[:id])
+    if permission.update(permission_params)
+      render_response(data: {
+        permission: permission
+      },
+                      message: "Update permission successfully",
+                      status: 201
+      )
+    else
+      raise ValidationError.new("Validation failed", permission.errors.to_hash(full_messages: true))
     end
   end
 
   # DELETE /permissions/1 or /permissions/1.json
   def destroy
-    @permission.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to permissions_path, notice: "Permission was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+    Permission.find_by!(id: params[:id]).destroy
+    render_response(message: "Deleted permission", status: 200)
   end
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_permission
-    @permission = Permission.find(params.expect(:id))
-  end
-
   # Only allow a list of trusted parameters through.
   def permission_params
-    params.fetch(:permission, {})
+    params.permit(:page, :per_page, :id, :action_name, :subject, :description)
   end
 end

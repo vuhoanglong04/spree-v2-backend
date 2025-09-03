@@ -23,7 +23,7 @@ class AccountUser < ApplicationRecord
   # Relationships
   has_many :user_identities, dependent: :destroy
   has_one :user_profile, dependent: :destroy
-  has_many :user_roles
-  has_many :roles, through: :user_roles
+  has_many :user_roles, dependent: :destroy
+  has_one :cart, dependent: :destroy
   accepts_nested_attributes_for :user_profile
 end

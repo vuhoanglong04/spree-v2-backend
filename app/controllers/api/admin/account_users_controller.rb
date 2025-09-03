@@ -6,8 +6,8 @@ class Api::Admin::AccountUsersController < Api::BaseController
     per_page = params[:per_page] ||= 5
     account_users = AccountUser.select("id,email,status,confirmed_at,created_at,updated_at").page(page).per(per_page)
     render_response(data:
-                      { account_users:
-                          ActiveModelSerializers::SerializableResource.new(account_users, each_serializer: AccountUserSerializer)
+                      {
+                        account_users: ActiveModelSerializers::SerializableResource.new(account_users, each_serializer: AccountUserSerializer)
                       },
                     message: "Get all account user successfully",
                     meta: pagination_meta(account_users),
@@ -20,8 +20,7 @@ class Api::Admin::AccountUsersController < Api::BaseController
     account_user = AccountUser.select("id,email,status,confirmed_at,created_at,updated_at")
                               .find_by(id: params[:id])
     render_response(data:
-                      { account_user:
-                          ActiveModelSerializers::SerializableResource.new(account_user, serializer: AccountUserSerializer)
+                      { account_user: account_user
                       },
                     message: "Get account user successfully",
                     status: 200
@@ -45,7 +44,7 @@ class Api::Admin::AccountUsersController < Api::BaseController
     account_user.user_profile.avatar_url = avatar_url
     if account_user.save
       render_response(data: {
-        account_user: ActiveModelSerializers::SerializableResource.new(account_user, serializer: AccountUserSerializer)
+        account_user: account_user
       },
                       message: "Create account user successfully",
                       status: 201)
@@ -64,7 +63,7 @@ class Api::Admin::AccountUsersController < Api::BaseController
       account_user.user_profile.avatar_url = avatar_url
       account_user.save
       render_response(data: {
-        account_user: ActiveModelSerializers::SerializableResource.new(account_user, serializer: AccountUserSerializer)
+        account_user: account_user
       },
                       message: "Update account user successfully",
                       status: 200)

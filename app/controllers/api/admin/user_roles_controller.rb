@@ -1,9 +1,14 @@
-class Api::Admin::UserRolesController < ApplicationController
-  before_action :set_user_role, only: %i[ show edit update destroy ]
+class Api::Admin::UserRolesController < Api::BaseController
 
   # GET /user_roles or /user_roles.json
   def index
-    @user_roles = UserRole.all
+    user_roles = UserRole.where(account_user_id: params[:account_user_id])
+    render_response(data: {
+      roles: ActiveModelSerializers::SerializableResource.new(user_roles, each_serializer: UserRoleSerializer)
+    },
+                    message: "Get all role successfully",
+                    status: 200
+    )
   end
 
   # GET /user_roles/1 or /user_roles/1.json
@@ -12,7 +17,6 @@ class Api::Admin::UserRolesController < ApplicationController
 
   # GET /user_roles/new
   def new
-    @user_role = UserRole.new
   end
 
   # GET /user_roles/1/edit
@@ -21,50 +25,28 @@ class Api::Admin::UserRolesController < ApplicationController
 
   # POST /user_roles or /user_roles.json
   def create
-    @user_role = UserRole.new(user_role_params)
-
-    respond_to do |format|
-      if @user_role.save
-        format.html { redirect_to @user_role, notice: "User role was successfully created." }
-        format.json { render :show, status: :created, location: @user_role }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @user_role.errors, status: :unprocessable_entity }
-      end
+    user_role = UserRole.new(user_role_params)
+    if user_role.save
+      render_response(message: "Added role", status: 201)
+    else
+      raise ValidationError.new("Validation failed", user_role.errors.to_hash(full_messages: true))
     end
   end
 
   # PATCH/PUT /user_roles/1 or /user_roles/1.json
   def update
-    respond_to do |format|
-      if @user_role.update(user_role_params)
-        format.html { redirect_to @user_role, notice: "User role was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @user_role }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @user_role.errors, status: :unprocessable_entity }
-      end
-    end
   end
 
   # DELETE /user_roles/1 or /user_roles/1.json
   def destroy
-    @user_role.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to user_roles_path, notice: "User role was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+    UserRole.find_by!(id: params[:id]).destroy
+    render_response(message: "Deleted this role", status: 200)
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user_role
-      @user_role = UserRole.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def user_role_params
-      params.fetch(:user_role, {})
-    end
+  # Only allow a list of trusted parameters through.
+  def user_role_params
+    params.permit(:id, :account_user_id, :role_id)
+  end
 end

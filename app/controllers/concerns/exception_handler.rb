@@ -11,7 +11,10 @@ module ExceptionHandler
     end
 
     rescue_from ActiveRecord::RecordNotFound do |e|
-      render_response(message: "Account not found", status: 401)
+      render_response(message: "Record not found", status: 404)
+    end
+    rescue_from ActiveRecord::RecordNotUnique do |e|
+      render_response(message: "This record is already exist", status: 401)
     end
   end
 end
