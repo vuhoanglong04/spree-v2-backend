@@ -1,18 +1,34 @@
-class Api::Admin::RolesController < ApplicationController
-  before_action :set_role, only: %i[ show edit update destroy ]
+class Api::Admin::RolesController < Api::BaseController
 
   # GET /roles or /roles.json
   def index
-    @roles = Role.all
+    page = params[:page] ||= 1
+    per_page = params[:per_page] ||= 5
+    roles = Role.all.page(page).per(per_page)
+    render_response(data:
+                      {
+                        roles: roles
+                      },
+                    message: "Get all role successfully",
+                    meta: pagination_meta(roles),
+                    status: 200
+    )
   end
 
   # GET /roles/1 or /roles/1.json
   def show
+    role = Role.find_by!(id: params[:id])
+    render_response(data: {
+      role: ActiveModelSerializers::SerializableResource.new(role, serializer: RoleSerializer)
+    },
+                    message: "Get role successfully",
+                    status: 200
+    )
   end
 
   # GET /roles/new
   def new
-    @role = Role.new
+
   end
 
   # GET /roles/1/edit
@@ -21,51 +37,50 @@ class Api::Admin::RolesController < ApplicationController
 
   # POST /roles or /roles.json
   def create
-    @role = Role.new(role_params)
-
-    respond_to do |format|
-      if @role.save
-        format.html { redirect_to @role, notice: "Role was successfully created." }
-        format.json { render :show, status: :created, location: @role }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @role.errors, status: :unprocessable_entity }
-      end
+    role = Role.new(role_params)
+    if role.save
+      render_response(data: {
+        role: role
+      },
+                      message: "Create role successfully",
+                      status: 201
+      )
+    else
+      raise ValidationError.new("Validation failed", role.errors.to_hash(full_messages: true))
     end
   end
 
   # PATCH/PUT /roles/1 or /roles/1.json
   def update
-    respond_to do |format|
-      if @role.update(role_params)
-        format.html { redirect_to @role, notice: "Role was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @role }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @role.errors, status: :unprocessable_entity }
-      end
+    role = Role.find_by!(id: params[:id])
+    if role.update(role_params)
+      render_response(data: {
+        role: role
+      },
+                      message: "Update role successfully",
+                      status: 201
+      )
+    else
+      raise ValidationError.new("Validation failed", role.errors.to_hash(full_messages: true))
     end
   end
 
   # DELETE /roles/1 or /roles/1.json
   def destroy
-    @role.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to roles_path, notice: "Role was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+    role = Role.find_by!(id: params[:id]).destroy
+    render_response(message: "Deleted role", status: 200)
   end
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_role
-    @role = Role.find(params.expect(:id))
-  end
-
   # Only allow a list of trusted parameters through.
   def role_params
-    params.fetch(:role, {})
+    params.permit(:page,
+                  :per_page,
+                  :id,
+                  :name,
+                  :description,
+                  role_permissions_attributes: [:permission_id]
+    )
   end
 end

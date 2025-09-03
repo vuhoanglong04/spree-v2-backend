@@ -32,7 +32,7 @@ roles = %w[admin manager staff customer guest].map do |role|
 end
 
 permissions = %w[read write update delete manage].map do |action|
-  Permission.create!(action:, subject: "Product", description: "#{action} permission")
+  Permission.create!(action_name: action, subject: "Product", description: "#{action} permission")
 end
 
 # Assign roles to users
