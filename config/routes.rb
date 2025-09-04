@@ -6,6 +6,12 @@ Rails.application.routes.draw do
       resources :roles
       resources :user_roles
 
+      resources :promotions do
+        member do
+          post :restore
+        end
+      end
+
       resources :categories do
         member do
           post :restore
