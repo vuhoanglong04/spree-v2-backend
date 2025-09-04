@@ -1,18 +1,32 @@
-class Api::Admin::AttributesController < ApplicationController
-  before_action :set_attribute, only: %i[ show edit update destroy ]
-
+class Api::Admin::AttributesController < Api::BaseController
   # GET /attributes or /attributes.json
   def index
-    @attributes = Attribute.all
+    page = params[:page] ||= 1
+    per_page = params[:per_page] ||= 5
+    attributes = Attribute.with_deleted.all.page(page).per(per_page)
+    render_response(
+      data: {
+        attributes: ActiveModelSerializers::SerializableResource.new(attributes, each_serializer: AttributeSerializer),
+      },
+      message: "Get all attributes successfully",
+      status: 200
+    )
   end
 
   # GET /attributes/1 or /attributes/1.json
   def show
+    attribute = Attribute.with_deleted.find_by!(id: params[:id])
+    render_response(
+      data: {
+        attributes: ActiveModelSerializers::SerializableResource.new(attribute, serializer: AttributeSerializer),
+      },
+      message: "Get attribute successfully",
+      status: 200
+    )
   end
 
   # GET /attributes/new
   def new
-    @attribute = Attribute.new
   end
 
   # GET /attributes/1/edit
@@ -21,50 +35,60 @@ class Api::Admin::AttributesController < ApplicationController
 
   # POST /attributes or /attributes.json
   def create
-    @attribute = Attribute.new(attribute_params)
-
-    respond_to do |format|
-      if @attribute.save
-        format.html { redirect_to @attribute, notice: "Attribute was successfully created." }
-        format.json { render :show, status: :created, location: @attribute }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @attribute.errors, status: :unprocessable_entity }
-      end
+    attribute = Attribute.new(attribute_params)
+    if attribute.save
+      render_response(
+        data: {
+          attribute: ActiveModelSerializers::SerializableResource.new(attribute, serializer: AttributeSerializer)
+        },
+        message: "Create attribute successfully",
+        status: 201
+      )
+    else
+      raise ValidationError.new("Validation failed", attribute.errors.to_hash(full_messages: true))
     end
   end
 
   # PATCH/PUT /attributes/1 or /attributes/1.json
   def update
-    respond_to do |format|
-      if @attribute.update(attribute_params)
-        format.html { redirect_to @attribute, notice: "Attribute was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @attribute }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @attribute.errors, status: :unprocessable_entity }
-      end
+    attribute = Attribute.with_deleted.find_by!(id: params[:id])
+    if attribute.update(attribute_params)
+      render_response(
+        data: {
+          attribute: ActiveModelSerializers::SerializableResource.new(attribute, serializer: AttributeSerializer)
+        },
+        message: "Update attribute successfully",
+        status: 201
+      )
+    else
+      raise ValidationError.new("Validation failed", attribute.errors.to_hash(full_messages: true))
     end
   end
 
   # DELETE /attributes/1 or /attributes/1.json
   def destroy
-    @attribute.destroy!
+    Attribute.without_deleted.find_by!(id: params[:id]).destroy
+    render_response(message: "Deleted attribute", status: 200)
+  end
 
-    respond_to do |format|
-      format.html { redirect_to attributes_path, notice: "Attribute was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+  # POST /attributes/1
+  def restore
+    attribute = Attribute.only_deleted.find_by!(id: params[:id])
+    Attribute.restore(attribute.id)
+    render_response(message: "Restored attribute", status: 200)
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_attribute
-      @attribute = Attribute.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def attribute_params
-      params.fetch(:attribute, {})
-    end
+  # Only allow a list of trusted parameters through.
+  def attribute_params
+    params.permit(:page,
+                  :per_page,
+                  :id,
+                  :name,
+                  :slug,
+                  :description,
+                  attribute_values_attributes: [:id, :value, :extra]
+    )
+  end
 end

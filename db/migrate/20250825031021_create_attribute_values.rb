@@ -4,7 +4,6 @@ class CreateAttributeValues < ActiveRecord::Migration[8.0]
       t.uuid :attribute_id, null: false
       t.string :value, null: false
       t.string :extra
-      t.timestamp :deleted_at
       t.timestamps
     end
   end

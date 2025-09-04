@@ -88,15 +88,26 @@ categories.each do |category|
   end
 end
 # ---- Products (15) ----
+# ---- Products with Images (15) ----
 products = 15.times.map do |i|
-  p = Product.create(
+  product = Product.create!(
     name: "Product #{i + 1}",
     slug: "product-#{i + 1}",
     description: "This is the description for product #{i + 1}",
-    brand: ["Nike", "Sony", "Apple", "Samsung", "Adidas"].sample
+    brand: %w[Nike Sony Apple Samsung Adidas].sample
   )
-  p.save
-  p
+
+  # Create 3 images per product
+  3.times do |j|
+    ProductImage.create!(
+      product_id: product.id,
+      url: "https://picsum.photos/seed/#{product.slug}-#{j}/600/600",
+      alt: "#{product.name} image #{j + 1}",
+      position: j + 1
+    )
+  end
+
+  product
 end
 
 # Assign categories to products
