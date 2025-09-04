@@ -1,18 +1,31 @@
-class Api::Admin::CategoriesController < ApplicationController
-  before_action :set_category, only: %i[ show edit update destroy ]
+class Api::Admin::CategoriesController < Api::BaseController
 
   # GET /categories or /categories.json
   def index
-    @categories = Category.all
+    page = params[:page] ||= 1
+    per_page = params[:per_page] ||= 5
+    categories = Category.with_deleted.order(:position).page(page).per(per_page)
+    render_response(data: {
+      categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer),
+    },
+                    message: "Get all categories successfully",
+                    status: 200
+    )
   end
 
   # GET /categories/1 or /categories/1.json
   def show
+    category = Category.with_deleted.find_by!(id: params[:id])
+    render_response(data: {
+      category: ActiveModelSerializers::SerializableResource.new(category, each_serializer: CategorySerializer)
+    },
+                    message: "Get a category successfully",
+                    status: 200
+    )
   end
 
   # GET /categories/new
   def new
-    @category = Category.new
   end
 
   # GET /categories/1/edit
@@ -21,50 +34,66 @@ class Api::Admin::CategoriesController < ApplicationController
 
   # POST /categories or /categories.json
   def create
-    @category = Category.new(category_params)
-
-    respond_to do |format|
-      if @category.save
-        format.html { redirect_to @category, notice: "Category was successfully created." }
-        format.json { render :show, status: :created, location: @category }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @category.errors, status: :unprocessable_entity }
+    category = Category.new(category_params)
+    if category.save
+      CategoryClosure.create!(ancestor: category.id, descendant: category.id, depth: 0)
+      if category_params[:parent_id]
+        CategoryClosure.where(descendant: category_params[:parent_id]).each do |parent|
+          CategoryClosure.create!(ancestor: parent.ancestor, descendant: category.id, depth: parent.depth + 1)
+        end
       end
+      render_response(
+        data: {
+          category: ActiveModelSerializers::SerializableResource.new(category, each_serializer: CategorySerializer)
+        },
+        message: "Create a category successfully",
+        status: 201
+      )
+    else
+      raise ValidationError.new("Validation failed", category.errors.to_hash(full_messages: true))
     end
   end
 
   # PATCH/PUT /categories/1 or /categories/1.json
   def update
-    respond_to do |format|
-      if @category.update(category_params)
-        format.html { redirect_to @category, notice: "Category was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @category }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @category.errors, status: :unprocessable_entity }
+    category = Category.with_deleted.find_by!(id: params[:id])
+    if category.update(category_params) \
+      # Change parent category
+      if category_params[:parent_id]
+        # Delete all records where this category is descendant
+        CategoryClosure.where(descendant: category.id).where.not(ancestor_id: category.id).destroy_all
+        # Create new links from this category to its ancestors
+        CategoryClosure.where(descendant: category_params[:parent_id]).each do |parent|
+          CategoryClosure.create!(ancestor: parent.ancestor, descendant: category.id, depth: parent.depth + 1)
+        end
       end
+      render_response(data: {
+        category: ActiveModelSerializers::SerializableResource.new(category, each_serializer: CategorySerializer)
+      },
+                      message: "Update a category successfully",
+                      status: 200)
+    else
+      raise ValidationError.new("Validation failed", category.errors.to_hash(full_messages: true))
     end
   end
 
   # DELETE /categories/1 or /categories/1.json
   def destroy
-    @category.destroy!
+    Category.without_deleted.find_by!(id: params[:id]).destroy
+    render_response(message: "Deleted category", status: 200)
+  end
 
-    respond_to do |format|
-      format.html { redirect_to categories_path, notice: "Category was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+  # POST /categories/1/restore
+  def restore
+    category = Category.only_deleted.find_by!(id: params[:id])
+    Category.restore(category.id)
+    render_response(message: "Restored category", status: 200)
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_category
-      @category = Category.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def category_params
-      params.fetch(:category, {})
-    end
+  # Only allow a list of trusted parameters through.
+  def category_params
+    params.permit(:page, :per_page, :id, :name, :slug, :position, :parent_id)
+  end
 end

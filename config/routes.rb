@@ -12,6 +12,11 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :categories do
+        member do
+          post :restore
+        end
+      end
     end
   end
 
