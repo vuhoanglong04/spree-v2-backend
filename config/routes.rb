@@ -5,6 +5,12 @@ Rails.application.routes.draw do
       resources :permissions
       resources :roles
       resources :user_roles
+
+      resources :categories do
+        member do
+          post :restore
+        end
+      end
     end
   end
 

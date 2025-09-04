@@ -55,10 +55,38 @@ account_users.first(5).each do |user|
 end
 
 # ---- Categories (5) ----
-categories = %w[Electronics Fashion Books Home Sports].map do |name|
-  Category.create!(name:, slug: name.downcase)
+
+# Create categories with slug
+electronics = Category.create!(name: "Electronics", slug: "electronics")
+laptops     = Category.create!(name: "Laptops", slug: "laptops", parent_id: electronics.id)
+gaming      = Category.create!(name: "Gaming", slug: "gaming", parent_id: laptops.id)
+phones      = Category.create!(name: "Phones", slug: "phones", parent_id: electronics.id)
+
+categories = [electronics, laptops, gaming, phones]
+
+# Helper to insert closure rows
+def insert_closure(ancestor, descendant, depth)
+  CategoryClosure.create!(
+    ancestor: ancestor.id,
+    descendant: descendant.id,
+    depth: depth
+  )
 end
 
+# Build closure table
+categories.each do |category|
+  # Self link
+  insert_closure(category, category, 0)
+
+  # Walk up parents
+  parent = category.parent_id.present? ? Category.find(category.parent_id) : nil
+  depth = 1
+  while parent
+    insert_closure(parent, category, depth)
+    parent = parent.parent_id.present? ? Category.find(parent.parent_id) : nil
+    depth += 1
+  end
+end
 # ---- Products (15) ----
 products = 15.times.map do |i|
   p = Product.create(
