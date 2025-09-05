@@ -9,13 +9,13 @@ Rails.application.routes.draw do
         member do
           post :restore
         end
-        resource :product_variants do
+        resources :product_variants do
           member do
             post :restore
           end
         end
       end
-      resources :attributes do
+      resources :product_attributes do
         member do
           post :restore
         end

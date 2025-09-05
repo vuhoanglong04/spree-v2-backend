@@ -7,7 +7,7 @@ puts "Seeding database..."
 [
   AccountUser, UserProfile, Role, Permission, UserRole, RolePermission,
   Category, CategoryClosure, Product, ProductImage, ProductVariant,
-  Attribute, AttributeValue, ProductVariantAttrValue,
+  ProductAttribute, AttributeValue, ProductVariantAttrValue,
   Cart, CartItem,
   Order, OrderItem, Payment, Refund, ReturnRequest,
   Promotion
@@ -132,18 +132,18 @@ end
 
 # ---- Attributes & Values (5 each) ----
 attributes = %w[Color Size Material Brand Style].map do |attr|
-  Attribute.create!(name: attr, slug: attr.downcase)
+  ProductAttribute.create!(name: attr, slug: attr.downcase)
 end
 
 attribute_values = attributes.map do |attr|
-  5.times.map { |i| AttributeValue.create!(attribute_id: attr.id, value: "#{attr.name} #{i + 1}") }
+  5.times.map { |i| AttributeValue.create!(product_attribute_id: attr.id, value: "#{attr.name} #{i + 1}") }
 end.flatten
 
 # Assign attribute values to variants
 product_variants.each do |variant|
   attr = attributes.sample
-  val = attribute_values.select { |v| v.attribute_id == attr.id }.sample
-  ProductVariantAttrValue.create!(product_variant_id: variant.id, attribute_id: attr.id, attribute_value_id: val.id)
+  val = attribute_values.select { |v| v.product_attribute_id == attr.id }.sample
+  ProductVariantAttrValue.create!(product_variant_id: variant.id, product_attribute_id: attr.id, attribute_value_id: val.id)
 end
 
 # ---- Carts & Cart Items ----

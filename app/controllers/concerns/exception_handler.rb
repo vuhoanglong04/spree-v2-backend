@@ -11,7 +11,7 @@ module ExceptionHandler
     end
 
     rescue_from ActiveRecord::RecordNotFound do |e|
-      render_response(message: "Record not found", status: 404)
+      render_response(message: "#{e.model} not found", status: 404)
     end
     rescue_from ActiveRecord::RecordNotUnique do |e|
       message = "Validation failed"
@@ -34,9 +34,9 @@ module ExceptionHandler
         if e.message =~ /Key \((.+)\)=\((.+)\) already exists/
           column = Regexp.last_match(1)
           value = Regexp.last_match(2)
-          errors << "#{model} #{column} - #{value} has already been taken"
+          errors << "#{model} #{column} - #{value} has already been taken\n"
         else
-          errors << "#{model} record already exists"
+          errors << "#{model} record already exists\n"
         end
       end
       render_response(

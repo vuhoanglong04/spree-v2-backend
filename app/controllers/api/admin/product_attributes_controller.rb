@@ -1,12 +1,12 @@
-class Api::Admin::AttributesController < Api::BaseController
+class Api::Admin::ProductAttributesController < Api::BaseController
   # GET /attributes or /attributes.json
   def index
     page = params[:page] ||= 1
     per_page = params[:per_page] ||= 5
-    attributes = Attribute.with_deleted.all.page(page).per(per_page)
+    attributes = ProductAttribute.with_deleted.all.page(page).per(per_page)
     render_response(
       data: {
-        attributes: ActiveModelSerializers::SerializableResource.new(attributes, each_serializer: AttributeSerializer),
+        attributes: ActiveModelSerializers::SerializableResource.new(attributes, each_serializer: ProductAttributeSerializer),
       },
       message: "Get all attributes successfully",
       status: 200
@@ -15,10 +15,10 @@ class Api::Admin::AttributesController < Api::BaseController
 
   # GET /attributes/1 or /attributes/1.json
   def show
-    attribute = Attribute.with_deleted.find_by!(id: params[:id])
+    attribute = ProductAttribute.with_deleted.find_by!(id: params[:id])
     render_response(
       data: {
-        attributes: ActiveModelSerializers::SerializableResource.new(attribute, serializer: AttributeSerializer),
+        attributes: ActiveModelSerializers::SerializableResource.new(attribute, serializer: ProductAttributeSerializer),
       },
       message: "Get attribute successfully",
       status: 200
@@ -35,11 +35,11 @@ class Api::Admin::AttributesController < Api::BaseController
 
   # POST /attributes or /attributes.json
   def create
-    attribute = Attribute.new(attribute_params)
+    attribute = ProductAttribute.new(attribute_params)
     if attribute.save
       render_response(
         data: {
-          attribute: ActiveModelSerializers::SerializableResource.new(attribute, serializer: AttributeSerializer)
+          attribute: ActiveModelSerializers::SerializableResource.new(attribute, serializer: ProductAttributeSerializer)
         },
         message: "Create attribute successfully",
         status: 201
@@ -51,11 +51,11 @@ class Api::Admin::AttributesController < Api::BaseController
 
   # PATCH/PUT /attributes/1 or /attributes/1.json
   def update
-    attribute = Attribute.with_deleted.find_by!(id: params[:id])
+    attribute = ProductAttribute.with_deleted.find_by!(id: params[:id])
     if attribute.update(attribute_params)
       render_response(
         data: {
-          attribute: ActiveModelSerializers::SerializableResource.new(attribute, serializer: AttributeSerializer)
+          attribute: ActiveModelSerializers::SerializableResource.new(attribute, serializer: ProductAttributeSerializer)
         },
         message: "Update attribute successfully",
         status: 201
@@ -67,14 +67,14 @@ class Api::Admin::AttributesController < Api::BaseController
 
   # DELETE /attributes/1 or /attributes/1.json
   def destroy
-    Attribute.without_deleted.find_by!(id: params[:id]).destroy
+    ProductAttribute.without_deleted.find_by!(id: params[:id]).destroy
     render_response(message: "Deleted attribute", status: 200)
   end
 
   # POST /attributes/1
   def restore
-    attribute = Attribute.only_deleted.find_by!(id: params[:id])
-    Attribute.restore(attribute.id)
+    attribute = ProductAttribute.only_deleted.find_by!(id: params[:id])
+    ProductAttribute.restore(attribute.id)
     render_response(message: "Restored attribute", status: 200)
   end
 
