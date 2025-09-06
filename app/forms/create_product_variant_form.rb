@@ -59,7 +59,7 @@ class CreateProductVariantForm
       # check duplicate (product_attribute_id, attribute_value_id)
       pair = [item["product_attribute_id"], item["attribute_value_id"]]
       if seen_pairs.include?(pair)
-        errors.add(:product_variant_attr_values_attributes, "Duplicate pair of product_attribute_id and attribute_value_id found")
+        errors.add(:product_variant_attr_values_attributes, "Duplicate variant found!")
         return
       else
         seen_pairs.add(pair)

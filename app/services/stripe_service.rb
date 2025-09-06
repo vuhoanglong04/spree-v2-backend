@@ -1,27 +1,45 @@
-# frozen_string_literal: true
-
 class StripeService
-  def self.create_variant(product, stock:, sku:, price:)
-    default_variant = ProductVariant.new(product_id: product.id, stock: stock, price: price, sku: sku, image_url: product.image_url)
-    default_variant.save!
-    self.sync_with_stripe(default_variant, product.name, product.description)
+  def self.sync_variant_to_stripe(variant)
+    name = "#{variant.name}"
+    if variant.attribute_values.pluck(:value)
+      name = "#{name} - #{variant.attribute_values.pluck(:value).join('/')}"
+    end
+
+    if variant.stripe_product_id.present? && variant.stripe_price_id.present?
+      Stripe::Product.update(
+        variant.stripe_product_id,
+        {
+          name: name,
+          description: variant.product.description
+        }
+      )
+    else
+      create_stripe_product(variant)
+    end
+  rescue StandardError => e
+    Rails.logger.error("Stripe sync failed for Variant##{variant.id}: #{e.message}")
   end
 
-  def self.sync_with_stripe(variant, name, description)
-    name = "#{name}/#{variant.color.name}/#{variant.size.name}" if variant.color && variant.size
+  def self.create_stripe_product(variant)
+    name = "#{variant.name}"
+    if variant.attribute_values.pluck(:value)
+      name = "#{name} - #{variant.attribute_values.pluck(:value).join('/')}"
+    end
+
     stripe_product = Stripe::Product.create(
       name: name,
-      description: description,
-      images: [variant.image_url || Faker::Avatar.image],
-      )
-
+      description: variant.product.description,
+      metadata: {
+        product_id: variant.product.id,
+        variant_id: variant.id
+      }
+    )
     stripe_price = Stripe::Price.create(
       unit_amount: (variant.price * 100).to_i,
       currency: "usd",
       product: stripe_product.id
     )
-
-    variant.update!(
+    variant.update_columns(
       stripe_product_id: stripe_product.id,
       stripe_price_id: stripe_price.id
     )

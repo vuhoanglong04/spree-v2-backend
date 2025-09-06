@@ -19,7 +19,7 @@ class UpdateProductForm
 
   def validate_default_product_variants_attributes
     if product_variant && !product_variant.empty?
-      variant_form = UpdateProductVariantForm.new(product_variant)
+      variant_form = UpdateDefaultNestedProductVariantForm.new(product_variant)
       unless variant_form.valid?
         errors.add(:product_variant, variant_form.errors.full_messages.to_sentence)
       end

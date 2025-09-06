@@ -52,11 +52,32 @@ class Api::Admin::ProductVariantsController < Api::BaseController
 
   # PATCH/PUT /product_variants/1 or /product_variants/1.json
   def update
-
+    UpdateProductVariantForm.new(product_variant_params)
+    product = Product.find_by!(id: params[:product_id])
+    product_variant = ProductVariant.with_deleted.find_by!(id: params[:id], product_id: product.id)
+    if product_variant.update(product_variant_params)
+      render_response(
+        data: {
+          product_variant: ActiveModelSerializers::SerializableResource.new(product_variant, serializer: ProductVariantSerializer)
+        },
+        message: "Update product variant successfully",
+        status: 200
+      )
+    else
+      raise ValidationError.new("Validation failed", product_variant.errors.to_hash(full_messages: true))
+    end
   end
 
   # DELETE /product_variants/1 or /product_variants/1.json
   def destroy
+    ProductVariant.without_deleted.find_by!(id: params[:id]).destroy
+    render_response(message: "Deleted variant", status: 200)
+  end
+
+  def restore
+    variant = ProductVariant.only_deleted.find_by!(id: params[:id])
+    ProductVariant.restore(variant.id)
+    render_response(message: "Restored variant", status: 200)
   end
 
   private
@@ -69,7 +90,7 @@ class Api::Admin::ProductVariantsController < Api::BaseController
                   :origin_price,
                   :price,
                   :stock_qty,
-                  product_variant_attr_values_attributes: [:product_attribute_id, :attribute_value_id,]
+                  product_variant_attr_values_attributes: [:id, :product_attribute_id, :attribute_value_id,]
     )
   end
 end
