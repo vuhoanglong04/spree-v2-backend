@@ -12,7 +12,7 @@ class CreateProductVariants < ActiveRecord::Migration[8.0]
       t.timestamp :deleted_at
       t.timestamps
     end
-    add_index :product_variants, :product_id, unique: true
+    add_index :product_variants, :product_id
     add_index :product_variants, :sku, unique: true
     add_index :product_variants, :name, unique: true
   end

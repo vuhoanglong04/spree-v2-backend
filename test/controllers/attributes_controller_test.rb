@@ -16,11 +16,11 @@ class AttributesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create attribute" do
-    assert_difference("Attribute.count") do
+    assert_difference("ProductAttribute.count") do
       post attributes_url, params: { attribute: {} }
     end
 
-    assert_redirected_to attribute_url(Attribute.last)
+    assert_redirected_to attribute_url(ProductAttribute.last)
   end
 
   test "should show attribute" do
@@ -39,7 +39,7 @@ class AttributesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy attribute" do
-    assert_difference("Attribute.count", -1) do
+    assert_difference("ProductAttribute.count", -1) do
       delete attribute_url(@attribute)
     end
 

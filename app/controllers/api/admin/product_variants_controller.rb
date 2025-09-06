@@ -1,18 +1,32 @@
-class Api::Admin::ProductVariantsController < ApplicationController
-  before_action :set_product_variant, only: %i[ show edit update destroy ]
-
+class Api::Admin::ProductVariantsController < Api::BaseController
   # GET /product_variants or /product_variants.json
   def index
-    @product_variants = ProductVariant.all
+    product = Product.with_deleted.find_by!(id: params[:product_id])
+    product_variants = product.product_variants.with_deleted
+    render_response(
+      data: {
+        product_variants: ActiveModelSerializers::SerializableResource.new(product_variants, each_serializer: ProductVariantSerializer)
+      },
+      message: "Get all product variants of product successfully",
+      status: 200
+    )
   end
 
   # GET /product_variants/1 or /product_variants/1.json
   def show
+    product = Product.with_deleted.find_by!(id: params[:product_id])
+    product_variants = ProductVariant.with_deleted.find_by!(id: params[:id], product_id: product.id)
+    render_response(
+      data: {
+        product_variants: ActiveModelSerializers::SerializableResource.new(product_variants, each_serializer: ProductVariantSerializer)
+      },
+      message: "Get all product variants of product successfully",
+      status: 200
+    )
   end
 
   # GET /product_variants/new
   def new
-    @product_variant = ProductVariant.new
   end
 
   # GET /product_variants/1/edit
@@ -21,50 +35,62 @@ class Api::Admin::ProductVariantsController < ApplicationController
 
   # POST /product_variants or /product_variants.json
   def create
-    @product_variant = ProductVariant.new(product_variant_params)
-
-    respond_to do |format|
-      if @product_variant.save
-        format.html { redirect_to @product_variant, notice: "Product variant was successfully created." }
-        format.json { render :show, status: :created, location: @product_variant }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @product_variant.errors, status: :unprocessable_entity }
-      end
+    CreateProductVariantForm.new(product_variant_params)
+    product_variant = ProductVariant.new(product_variant_params)
+    if product_variant.save
+      render_response(
+        data: {
+          product_variant: ActiveModelSerializers::SerializableResource.new(product_variant, serializer: ProductVariantSerializer)
+        },
+        message: "Create product variant successfully",
+        status: 201
+      )
+    else
+      raise ValidationError.new("Validation failed", product_variant.errors.to_hash(full_messages: true))
     end
   end
 
   # PATCH/PUT /product_variants/1 or /product_variants/1.json
   def update
-    respond_to do |format|
-      if @product_variant.update(product_variant_params)
-        format.html { redirect_to @product_variant, notice: "Product variant was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @product_variant }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @product_variant.errors, status: :unprocessable_entity }
-      end
+    UpdateProductVariantForm.new(product_variant_params)
+    product = Product.find_by!(id: params[:product_id])
+    product_variant = ProductVariant.with_deleted.find_by!(id: params[:id], product_id: product.id)
+    if product_variant.update(product_variant_params)
+      render_response(
+        data: {
+          product_variant: ActiveModelSerializers::SerializableResource.new(product_variant, serializer: ProductVariantSerializer)
+        },
+        message: "Update product variant successfully",
+        status: 200
+      )
+    else
+      raise ValidationError.new("Validation failed", product_variant.errors.to_hash(full_messages: true))
     end
   end
 
   # DELETE /product_variants/1 or /product_variants/1.json
   def destroy
-    @product_variant.destroy!
+    ProductVariant.without_deleted.find_by!(id: params[:id]).destroy
+    render_response(message: "Deleted variant", status: 200)
+  end
 
-    respond_to do |format|
-      format.html { redirect_to product_variants_path, notice: "Product variant was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+  def restore
+    variant = ProductVariant.only_deleted.find_by!(id: params[:id])
+    ProductVariant.restore(variant.id)
+    render_response(message: "Restored variant", status: 200)
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_product_variant
-      @product_variant = ProductVariant.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def product_variant_params
-      params.fetch(:product_variant, {})
-    end
+  # Only allow a list of trusted parameters through.
+  def product_variant_params
+    params.permit(:product_id,
+                  :sku,
+                  :name,
+                  :origin_price,
+                  :price,
+                  :stock_qty,
+                  product_variant_attr_values_attributes: [:id, :product_attribute_id, :attribute_value_id,]
+    )
+  end
 end

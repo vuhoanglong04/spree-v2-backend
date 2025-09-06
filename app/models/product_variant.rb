@@ -1,3 +1,17 @@
 class ProductVariant < ApplicationRecord
+  # Callback
+  after_create_commit :create_stripe_product
+  # Relationship
   belongs_to :product
+  has_many :product_variant_attr_values
+  has_many :attribute_values, through: :product_variant_attr_values
+  accepts_nested_attributes_for :product_variant_attr_values
+  # Other
+  acts_as_paranoid
+
+  private
+
+  def create_stripe_product
+    StripeService.create_stripe_product(self)
+  end
 end

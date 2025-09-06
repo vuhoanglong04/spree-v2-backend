@@ -5,7 +5,7 @@ class CreateProducts < ActiveRecord::Migration[8.0]
       t.string :slug, null: false
       t.text :description
       t.string :brand
-      t.bigint :favourite_count
+      t.bigint :favourite_count, default: 0
       t.timestamp :deleted_at
       t.timestamps
     end

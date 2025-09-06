@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="spree_v2_development@localhost" uuid="8942962c-629d-43be-8a68-3f9392c75d9d">
+    <data-source source="LOCAL" name="spree_v2_development@localhost" uuid="e9a46467-62f4-49b8-bbb5-119b28e06cab">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

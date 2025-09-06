@@ -7,7 +7,7 @@ puts "Seeding database..."
 [
   AccountUser, UserProfile, Role, Permission, UserRole, RolePermission,
   Category, CategoryClosure, Product, ProductImage, ProductVariant,
-  Attribute, AttributeValue, ProductVariantAttrValue,
+  ProductAttribute, AttributeValue, ProductVariantAttrValue,
   Cart, CartItem,
   Order, OrderItem, Payment, Refund, ReturnRequest,
   Promotion
@@ -88,15 +88,26 @@ categories.each do |category|
   end
 end
 # ---- Products (15) ----
+# ---- Products with Images (15) ----
 products = 15.times.map do |i|
-  p = Product.create(
+  product = Product.create!(
     name: "Product #{i + 1}",
     slug: "product-#{i + 1}",
     description: "This is the description for product #{i + 1}",
-    brand: ["Nike", "Sony", "Apple", "Samsung", "Adidas"].sample
+    brand: %w[Nike Sony Apple Samsung Adidas].sample
   )
-  p.save
-  p
+
+  # Create 3 images per product
+  3.times do |j|
+    ProductImage.create!(
+      product_id: product.id,
+      url: "https://picsum.photos/seed/#{product.slug}-#{j}/600/600",
+      alt: "#{product.name} image #{j + 1}",
+      position: j + 1
+    )
+  end
+
+  product
 end
 
 # Assign categories to products
@@ -121,18 +132,18 @@ end
 
 # ---- Attributes & Values (5 each) ----
 attributes = %w[Color Size Material Brand Style].map do |attr|
-  Attribute.create!(name: attr, slug: attr.downcase)
+  ProductAttribute.create!(name: attr, slug: attr.downcase)
 end
 
 attribute_values = attributes.map do |attr|
-  5.times.map { |i| AttributeValue.create!(attribute_id: attr.id, value: "#{attr.name} #{i + 1}") }
+  5.times.map { |i| AttributeValue.create!(product_attribute_id: attr.id, value: "#{attr.name} #{i + 1}") }
 end.flatten
 
 # Assign attribute values to variants
 product_variants.each do |variant|
   attr = attributes.sample
-  val = attribute_values.select { |v| v.attribute_id == attr.id }.sample
-  ProductVariantAttrValue.create!(product_variant_id: variant.id, attribute_id: attr.id, attribute_value_id: val.id)
+  val = attribute_values.select { |v| v.product_attribute_id == attr.id }.sample
+  ProductVariantAttrValue.create!(product_variant_id: variant.id, product_attribute_id: attr.id, attribute_value_id: val.id)
 end
 
 # ---- Carts & Cart Items ----

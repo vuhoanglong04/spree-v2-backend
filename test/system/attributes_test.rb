@@ -14,26 +14,26 @@ class AttributesTest < ApplicationSystemTestCase
     visit attributes_url
     click_on "New attribute"
 
-    click_on "Create Attribute"
+    click_on "Create ProductAttribute"
 
-    assert_text "Attribute was successfully created"
+    assert_text "ProductAttribute was successfully created"
     click_on "Back"
   end
 
-  test "should update Attribute" do
+  test "should update ProductAttribute" do
     visit attribute_url(@attribute)
     click_on "Edit this attribute", match: :first
 
-    click_on "Update Attribute"
+    click_on "Update ProductAttribute"
 
-    assert_text "Attribute was successfully updated"
+    assert_text "ProductAttribute was successfully updated"
     click_on "Back"
   end
 
-  test "should destroy Attribute" do
+  test "should destroy ProductAttribute" do
     visit attribute_url(@attribute)
     click_on "Destroy this attribute", match: :first
 
-    assert_text "Attribute was successfully destroyed"
+    assert_text "ProductAttribute was successfully destroyed"
   end
 end
