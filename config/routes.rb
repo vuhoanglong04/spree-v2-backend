@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       resources :permissions
       resources :roles
       resources :user_roles
+      resources :orders
       resources :products do
         member do
           post :restore

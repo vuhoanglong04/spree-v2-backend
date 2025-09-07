@@ -6,7 +6,7 @@ class Api::Admin::ProductAttributesController < Api::BaseController
     attributes = ProductAttribute.with_deleted.all.page(page).per(per_page)
     render_response(
       data: {
-        attributes: ActiveModelSerializers::SerializableResource.new(attributes, each_serializer: ProductAttributeSerializer),
+        attributes: ActiveModelSerializers::SerializableResource.new(attributes, each_serializer: ProductAttributeSerializer)
       },
       message: "Get all attributes successfully",
       status: 200
@@ -18,7 +18,7 @@ class Api::Admin::ProductAttributesController < Api::BaseController
     attribute = ProductAttribute.with_deleted.find_by!(id: params[:id])
     render_response(
       data: {
-        attributes: ActiveModelSerializers::SerializableResource.new(attribute, serializer: ProductAttributeSerializer),
+        attributes: ActiveModelSerializers::SerializableResource.new(attribute, serializer: ProductAttributeSerializer)
       },
       message: "Get attribute successfully",
       status: 200

@@ -13,6 +13,11 @@ module ExceptionHandler
     rescue_from ActiveRecord::RecordNotFound do |e|
       render_response(message: "#{e.model} not found", status: 404)
     end
+
+    rescue_from OutOfStockError do |e|
+      render_response(message: e.message, status: 422)
+    end
+
     rescue_from ActiveRecord::RecordNotUnique do |e|
       message = "Validation failed"
       errors = []

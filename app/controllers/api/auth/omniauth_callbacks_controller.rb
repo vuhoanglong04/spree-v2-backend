@@ -60,7 +60,7 @@ class Api::Auth::OmniauthCallbacksController < Devise::OmniauthCallbacksControll
     end
     sign_in(resource_name, user)
     render_response(data: {
-      user: ActiveModelSerializers::SerializableResource.new(user, serializer: AccountUserSerializer),
+      user: ActiveModelSerializers::SerializableResource.new(user, serializer: AccountUserSerializer)
       refresh_token: RefreshTokenService.issue(user.id)
     },
                     message: "Login successful",

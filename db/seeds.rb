@@ -58,9 +58,9 @@ end
 
 # Create categories with slug
 electronics = Category.create!(name: "Electronics", slug: "electronics")
-laptops     = Category.create!(name: "Laptops", slug: "laptops", parent_id: electronics.id)
-gaming      = Category.create!(name: "Gaming", slug: "gaming", parent_id: laptops.id)
-phones      = Category.create!(name: "Phones", slug: "phones", parent_id: electronics.id)
+laptops = Category.create!(name: "Laptops", slug: "laptops", parent_id: electronics.id)
+gaming = Category.create!(name: "Gaming", slug: "gaming", parent_id: laptops.id)
+phones = Category.create!(name: "Phones", slug: "phones", parent_id: electronics.id)
 
 categories = [electronics, laptops, gaming, phones]
 
@@ -118,16 +118,116 @@ categories.each_with_index do |category, i|
 end
 # ---- Product Variants (5) ----
 product_variants = products.first(5).map do |product|
-  v = ProductVariant.create(
+  v = ProductVariant.create!(
     product_id: product.id,
     sku: "SKU-#{SecureRandom.hex(3)}",
     name: "#{product.name} Variant",
     origin_price: rand(50..200),
     price: rand(30..150),
-    stock_qty: rand(10..100)
+    stock_qty: rand(10..100),
+    image_url: "https://picsum.photos/seed/#{product.slug}-variant/600/600"
   )
-  v.save
   v
+end
+
+# ---- Orders, Order Items,Promotions, Payments, Refunds, Return Requests ----
+puts "Seeding promotions..."
+
+Promotion.delete_all
+
+Promotion.create!([
+                    {
+                      code: "WELCOME10",
+                      description: "Giảm 10% cho đơn hàng đầu tiên",
+                      promotion_type: 0, # 0 = percent, 1 = fixed amount (tùy enum bạn định nghĩa)
+                      value: 10.0,
+                      start_date: Time.current - 1.day,
+                      end_date: Time.current + 30.days,
+                      usage_limit: 1000,
+                      per_user_limit: 1,
+                      min_order_amount: 0.0
+                    },
+                    {
+                      code: "FREESHIP50K",
+                      description: "Giảm 50K phí vận chuyển cho đơn từ 500K",
+                      promotion_type: 1, # fixed amount
+                      value: 50.0,
+                      start_date: Time.current - 1.day,
+                      end_date: Time.current + 60.days,
+                      usage_limit: 500,
+                      per_user_limit: 2,
+                      min_order_amount: 500.0
+                    },
+                    {
+                      code: "BLACKFRIDAY2025",
+                      description: "Black Friday - Giảm 200K cho đơn từ 1 triệu",
+                      promotion_type: 1,
+                      value: 200.0,
+                      start_date: Date.new(2025, 11, 28).beginning_of_day,
+                      end_date: Date.new(2025, 11, 30).end_of_day,
+                      usage_limit: 200,
+                      per_user_limit: 1,
+                      min_order_amount: 1_000.0
+                    },
+                    {
+                      code: "SUMMER20",
+                      description: "Summer Sale - Giảm 20% cho mọi đơn hàng",
+                      promotion_type: 0,
+                      value: 20.0,
+                      start_date: Time.current,
+                      end_date: Time.current + 90.days,
+                      usage_limit: nil, # không giới hạn
+                      per_user_limit: nil,
+                      min_order_amount: 0.0
+                    }
+                  ])
+
+orders = account_users.first(5).map do |user|
+  Order.create!(account_user_id: user.id, status: 1, total_amount: 100)
+end
+
+orders.each do |order|
+  variant = product_variants.sample
+
+  # snapshot variant attributes into JSON
+  snapshot = {
+    id: variant.id,
+    sku: variant.sku,
+    name: variant.name,
+    price: variant.price,
+    image_url: variant.image_url,
+    stock_qty: variant.stock_qty
+  }.to_json
+
+  OrderItem.create!(
+    order_id: order.id,
+    product_variant_id: variant.id,
+    quantity: 1,
+    unit_price: variant.price,
+    product_variant_snapshot: snapshot
+  )
+
+  payment = Payment.create!(
+    order_id: order.id,
+    stripe_payment_id: SecureRandom.hex(8),
+    amount: order.total_amount,
+    status: 1
+  )
+
+  Refund.create!(
+    payment_id: payment.id,
+    stripe_refund_id: SecureRandom.hex(8),
+    amount: 10,
+    status: 1
+  )
+
+  ReturnRequest.create!(
+    order_id: order.id,
+    order_item_id: order.order_items.first.id,
+    quantity: 1,
+    reason: "Damaged item",
+    status: 0
+  )
 end
 
 # ---- Attributes & Values (5 each) ----
@@ -158,55 +258,4 @@ carts.each do |cart|
     quantity: rand(1..3)
   )
 end
-
-# ---- Orders, Order Items, Payments, Refunds, Return Requests ----
-orders = account_users.first(5).map do |user|
-  Order.create!(account_user_id: user.id, status: 1, total_amount: 100)
-end
-
-orders.each do |order|
-  variant = product_variants.sample
-  OrderItem.create!(
-    order_id: order.id,
-    product_variant_id: variant.id,
-    name: variant.name,
-    sku: variant.sku,
-    quantity: 1,
-    unit_price: variant.price
-  )
-
-  payment = Payment.create!(
-    order_id: order.id,
-    stripe_payment_id: SecureRandom.hex(8),
-    amount: order.total_amount,
-    status: 1
-  )
-
-  Refund.create!(
-    payment_id: payment.id,
-    stripe_refund_id: SecureRandom.hex(8),
-    amount: 10,
-    status: 1
-  )
-
-  ReturnRequest.create!(
-    order_id: order.id,
-    order_item_id: order.order_items.first.id,
-    quantity: 1,
-    reason: "Damaged item",
-    status: 0
-  )
-end
-
-# ---- Promotions ----
-5.times do |i|
-  Promotion.create!(
-    code: "PROMO#{i + 1}",
-    description: "Discount promo #{i + 1}",
-    value: rand(5..20),
-    start_date: Time.now,
-    end_date: Time.now + 30.days
-  )
-end
-
 puts "✅ Seeding completed!"

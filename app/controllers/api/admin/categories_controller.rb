@@ -6,7 +6,7 @@ class Api::Admin::CategoriesController < Api::BaseController
     per_page = params[:per_page] ||= 5
     categories = Category.with_deleted.order(:position).page(page).per(per_page)
     render_response(data: {
-      categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer),
+      categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer)
     },
                     message: "Get all categories successfully",
                     status: 200

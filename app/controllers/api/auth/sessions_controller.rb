@@ -15,7 +15,7 @@ class Api::Auth::SessionsController < Devise::SessionsController
     if resource.present?
       sign_in(resource_name, resource)
       render_response(data: {
-        user: ActiveModelSerializers::SerializableResource.new(resource, serializer: LoginSerializer),
+        user: ActiveModelSerializers::SerializableResource.new(resource, serializer: LoginSerializer)
         refresh_token: RefreshTokenService.issue(resource.id)
       },
                       message: "Login successful",
@@ -52,7 +52,7 @@ class Api::Auth::SessionsController < Devise::SessionsController
       raise AuthenticationError, "User not found" if user.nil?
       sign_in(resource_name, user)
       render_response(data: {
-        user: ActiveModelSerializers::SerializableResource.new(user, serializer: AccountUserSerializer),
+        user: ActiveModelSerializers::SerializableResource.new(user, serializer: AccountUserSerializer)
         refresh_token: RefreshTokenService.rotate(session_params[:refresh_token], user_id)
       },
                       message: "Refresh token successful",

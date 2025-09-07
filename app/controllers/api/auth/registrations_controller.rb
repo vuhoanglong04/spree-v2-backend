@@ -17,7 +17,7 @@ class Api::Auth::RegistrationsController < Devise::RegistrationsController
     build_resource(sign_up_params)
     if resource.save
       render_response(data: {
-        user: ActiveModelSerializers::SerializableResource.new(resource, serializer: AccountUserSerializer),
+        user: ActiveModelSerializers::SerializableResource.new(resource, serializer: AccountUserSerializer)
         refresh_token: RefreshTokenService.issue(resource.id)
       },
                       status: 201,

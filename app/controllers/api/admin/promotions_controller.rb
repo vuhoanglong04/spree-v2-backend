@@ -52,18 +52,18 @@ class Api::Admin::PromotionsController < Api::BaseController
 
   # PATCH/PUT /promotions/1 or /promotions/1.json
   def update
-    promotion = Promotion.with_deleted.find_by!(id: params[:id])
-    if promotion.update(promotion_params)
-      render_response(
-        data: {
-          promotions: ActiveModelSerializers::SerializableResource.new(promotion, serializer: PromotionSerializer)
-        },
-        message: "Update promotion successfully.",
-        status: 200
-      )
-    else
-      raise ValidationError.new("Validation failed", promotion.errors.to_hash(full_messages: true))
-    end
+    # promotion = Promotion.with_deleted.find_by!(id: params[:id])
+    # if promotion.update(promotion_params)
+    #   render_response(
+    #     data: {
+    #       promotions: ActiveModelSerializers::SerializableResource.new(promotion, serializer: PromotionSerializer)
+    #     },
+    #     message: "Update promotion successfully.",
+    #     status: 200
+    #   )
+    # else
+    #   raise ValidationError.new("Validation failed", promotion.errors.to_hash(full_messages: true))
+    # end
   end
 
   # DELETE /promotions/1 or /promotions/1.json
@@ -82,18 +82,16 @@ class Api::Admin::PromotionsController < Api::BaseController
 
   # Only allow a list of trusted parameters through.
   def promotion_params
-    params.permit(:page,
-                  :per_page,
-                  :id,
-                  :code,
-                  :promotion_type,
-                  :value,
-                  :usage_limit,
-                  :min_order_amount,
-                  :description,
-                  :per_user_limit,
-                  :start_date,
-                  :end_date,
+    params.permit(
+      :code,
+      :promotion_type,
+      :value,
+      :usage_limit,
+      :min_order_amount,
+      :description,
+      :per_user_limit,
+      :start_date,
+      :end_date,
     )
   end
 end

@@ -3,7 +3,16 @@
 class CreateProductVariantForm
   include ActiveModel::Model
   include CustomValidateForm
-  attr_accessor :product_id, :sku, :name, :origin_price, :price, :stock_qty, :product_variant_attr_values_attributes
+  attr_accessor :product_id,
+                :image_url,
+                :sku,
+                :name,
+                :origin_price,
+                :price,
+                :stock_qty,
+                :product_variant_attr_values_attributes
+
+  validates :image_url, presence: { message: "Variant image is required" }
 
   validates :product_id,
             presence: { message: "Product ID is required" }

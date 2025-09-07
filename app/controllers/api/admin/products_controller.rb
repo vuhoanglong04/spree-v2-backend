@@ -38,6 +38,7 @@ class Api::Admin::ProductsController < Api::BaseController
     product_attrs = create_product_params.to_h.deep_dup
     product_attrs[:product_images_attributes].each do |index, image_data|
       url = S3UploadService.upload(image_data[:file], "products")
+      product_attrs[:product_variants_attributes][:image_url] = url if index == "0" || index == 0
       image_data.delete(:file)
       image_data[:url] = url
     end
@@ -90,6 +91,7 @@ class Api::Admin::ProductsController < Api::BaseController
       if update_product_params[:product_variant].present?
         variant = ProductVariant.with_deleted.find_by!(id: update_product_params[:product_variant][:id])
         variant.update!(update_product_params[:product_variant])
+        variant.update_column(image_url: ProductImage.find_by!(id: new_image_ids[0]).url)
       end
       unless update_product_params[:images].empty?
         ProductImage.where(product_id: product.id).where.not(id: new_image_ids).destroy_all

@@ -1,6 +1,7 @@
 class ProductVariantSerializer < ActiveModel::Serializer
   include SerializerConcern
   attributes :id,
+             :image_url,
              :sku,
              :name,
              :origin_price,

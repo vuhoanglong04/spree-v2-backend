@@ -37,6 +37,8 @@ class Api::Admin::ProductVariantsController < Api::BaseController
   def create
     CreateProductVariantForm.new(product_variant_params)
     product_variant = ProductVariant.new(product_variant_params)
+    url = S3UploadService.upload(product_variant_params[:image_url], "products")
+    product_variant.image_url = url
     if product_variant.save
       render_response(
         data: {
@@ -56,6 +58,11 @@ class Api::Admin::ProductVariantsController < Api::BaseController
     product = Product.find_by!(id: params[:product_id])
     product_variant = ProductVariant.with_deleted.find_by!(id: params[:id], product_id: product.id)
     if product_variant.update(product_variant_params)
+      if product_variant_params[:image_url]
+        S3UploadService.upload(product_variant_params[:image_url], "products")
+        url = S3UploadService.upload(product_variant_params[:image_url], "products")
+        product_variant.update_column(:image_url, url)
+      end
       render_response(
         data: {
           product_variant: ActiveModelSerializers::SerializableResource.new(product_variant, serializer: ProductVariantSerializer)
@@ -85,6 +92,7 @@ class Api::Admin::ProductVariantsController < Api::BaseController
   # Only allow a list of trusted parameters through.
   def product_variant_params
     params.permit(:product_id,
+                  :image_url,
                   :sku,
                   :name,
                   :origin_price,
