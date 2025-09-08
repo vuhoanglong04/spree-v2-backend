@@ -10,6 +10,7 @@ class AccountUser < ApplicationRecord
          jwt_revocation_strategy: JwtRedisDenyList
 
   enum :status, { active: 0, disabled: 1, blocked: 2 }
+  enum :main_role, { customer: 0, staff: 1 }
 
   # Validates
   validates :email,
