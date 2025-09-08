@@ -83,7 +83,7 @@ class Api::Admin::AccountUsersController < Api::BaseController
   def account_user_params
     params
       .require(:account_user)
-      .permit(:id, :email, :status, :password, :password_confirmation,
+      .permit(:id, :email, :status, :password, :password_confirmation, :main_role,
               user_profile_attributes: [:full_name, :phone, :avatar_url, :locale, :time_zone])
   end
 end

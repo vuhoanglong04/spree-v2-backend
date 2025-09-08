@@ -5,6 +5,7 @@ class DeviseCreateAccountUsers < ActiveRecord::Migration[8.0]
     create_table :account_users, id: :uuid do |t|
       # Other
       t.integer :status, default: 0, null: false
+      t.integer :main_role, default: 0, null: false
 
       ## Database authenticatable
       t.string :email, null: false
