@@ -6,20 +6,22 @@ class Api::Admin::CategoriesController < Api::BaseController
     per_page = params[:per_page] ||= 5
     categories = Category.with_deleted.order(:position).page(page).per(per_page)
     render_response(data: {
-      categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer),
+      categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer)
     },
                     message: "Get all categories successfully",
-                    status: 200
+                    status: 200,
+                    meta: pagination_meta(categories)
     )
   end
 
   # GET /categories/1 or /categories/1.json
-  def show
-    category = Category.with_deleted.find_by!(id: params[:id])
+  def search
+    name = params[:name]
+    categories = Category.with_deleted.where("name Like ?", "#{name}%").limit(3)
     render_response(data: {
-      category: ActiveModelSerializers::SerializableResource.new(category, each_serializer: CategorySerializer)
+      categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer)
     },
-                    message: "Get a category successfully",
+                    message: "Search categories successfully",
                     status: 200
     )
   end

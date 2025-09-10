@@ -1,4 +1,17 @@
 class CategorySerializer < ActiveModel::Serializer
   include SerializerConcern
-  attributes :id, :name, :slug, :position, :parent_id, :created_at, :updated_at
+  attributes :id,
+             :name,
+             :slug,
+             :product_count,
+             :position,
+             :parent_id,
+             :deleted_at,
+             :created_at,
+             :updated_at
+  def product_count
+    object.products.count
+  end
+
 end
+
