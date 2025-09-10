@@ -14,14 +14,29 @@ class Api::Admin::CategoriesController < Api::BaseController
     )
   end
 
-  # GET /categories/1 or /categories/1.json
+  # GET /categories/search?name= or /categories/1.json
   def search
     name = params[:name]
-    categories = Category.with_deleted.where("name Like ?", "#{name}%")
+    categories = if name.present?
+                   Category.with_deleted.order(:position).where("name ILIKE ?", "%#{name}%").limit(2)
+                 else
+                   Category.with_deleted.order(:position).limit(2)
+                 end
+
     render_response(data: {
       categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer)
     },
                     message: "Search categories successfully",
+                    status: 200
+    )
+  end
+
+  def show
+    category = Category.find_by!(id: params[:id])
+    render_response(data: {
+      categories: ActiveModelSerializers::SerializableResource.new(categories, serializer: CategorySerializer)
+    },
+                    message: "Get category successfully",
                     status: 200
     )
   end

@@ -8,7 +8,7 @@ class CreateCategories < ActiveRecord::Migration[8.0]
       t.timestamp :deleted_at
       t.timestamps
     end
-    add_index :categories, :slug, unique: true
-    add_index :categories, :name, unique: true
+    add_index :categories, :slug
+    add_index :categories, :name
   end
 end

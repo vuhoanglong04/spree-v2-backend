@@ -17,7 +17,7 @@ puts "Seeding database..."
 account_users = 15.times.map do |i|
   user = AccountUser.create(
     email: "user#{i + 1}@example.com",
-    password: "123456", # Normally Devise encrypts
+    password: "123456",
     status: 0,
     confirmed_at: Time.now
   )
@@ -25,7 +25,6 @@ account_users = 15.times.map do |i|
   user.save
   user
 end
-
 # ---- Roles & Permissions (5 each) ----
 roles = %w[admin manager staff customer guest].map do |role|
   Role.create!(name: role.capitalize, description: "#{role} role")

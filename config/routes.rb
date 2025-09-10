@@ -30,9 +30,9 @@ Rails.application.routes.draw do
       resources :categories do
         member do
           post :restore
-          post :search
         end
       end
+      get "categories/search/list", to: 'categories#search'
     end
   end
   post "api/payment/stripe", to: "api/payment#stripe"
