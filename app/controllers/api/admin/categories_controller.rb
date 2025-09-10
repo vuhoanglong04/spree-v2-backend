@@ -17,7 +17,7 @@ class Api::Admin::CategoriesController < Api::BaseController
   # GET /categories/1 or /categories/1.json
   def search
     name = params[:name]
-    categories = Category.with_deleted.where("name Like ?", "#{name}%").limit(3)
+    categories = Category.with_deleted.where("name Like ?", "#{name}%")
     render_response(data: {
       categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer)
     },
