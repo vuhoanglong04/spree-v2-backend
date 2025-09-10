@@ -46,7 +46,6 @@ authentication, payment processing, and search capabilities.
 |                      | Styled Components        | CSS-in-JS           |
 | **Routing**          | React Router             | Client-side routing |
 | **Forms**            | React Hook Form          | Form handling       |
-|                      | Yup / Zod                | Validation          |
 | **HTTP Client**      | RTK Query                | API calls           |
 
 ## Services
