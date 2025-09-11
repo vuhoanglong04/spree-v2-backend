@@ -4,7 +4,7 @@ class Api::Admin::CategoriesController < Api::BaseController
   def index
     page = params[:page] ||= 1
     per_page = params[:per_page] ||= 5
-    categories = Category.with_deleted.order(:position).page(page).per(per_page)
+    categories = Category.with_deleted.order("updated_at desc").page(page).per(per_page)
     render_response(data: {
       categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer)
     },
@@ -53,12 +53,12 @@ class Api::Admin::CategoriesController < Api::BaseController
   def create
     category = Category.new(category_params)
     if category.save
-      CategoryClosure.create!(ancestor: category.id, descendant: category.id, depth: 0)
-      if category_params[:parent_id]
-        CategoryClosure.where(descendant: category_params[:parent_id]).each do |parent|
-          CategoryClosure.create!(ancestor: parent.ancestor, descendant: category.id, depth: parent.depth + 1)
-        end
-      end
+      # CategoryClosure.create!(ancestor: category.id, descendant: category.id, depth: 0)
+      # if category_params[:parent_id]
+      #   CategoryClosure.where(descendant: category_params[:parent_id]).each do |parent|
+      #     CategoryClosure.create!(ancestor: parent.ancestor, descendant: category.id, depth: parent.depth + 1)
+      #   end
+      # end
       render_response(
         data: {
           category: ActiveModelSerializers::SerializableResource.new(category, each_serializer: CategorySerializer)
@@ -76,14 +76,14 @@ class Api::Admin::CategoriesController < Api::BaseController
     category = Category.with_deleted.find_by!(id: params[:id])
     if category.update(category_params) \
       # Change parent category
-      if category_params[:parent_id]
-        # Delete all records where this category is descendant
-        CategoryClosure.where(descendant: category.id).where.not(ancestor_id: category.id).destroy_all
-        # Create new links from this category to its ancestors
-        CategoryClosure.where(descendant: category_params[:parent_id]).each do |parent|
-          CategoryClosure.create!(ancestor: parent.ancestor, descendant: category.id, depth: parent.depth + 1)
-        end
-      end
+      # if category_params[:parent_id]
+      #   # Delete all records where this category is descendant
+      #   CategoryClosure.where(descendant: category.id).where.not(ancestor_id: category.id).destroy_all
+      #   # Create new links from this category to its ancestors
+      #   CategoryClosure.where(descendant: category_params[:parent_id]).each do |parent|
+      #     CategoryClosure.create!(ancestor: parent.ancestor, descendant: category.id, depth: parent.depth + 1)
+      #   end
+      # end
       render_response(data: {
         category: ActiveModelSerializers::SerializableResource.new(category, each_serializer: CategorySerializer)
       },

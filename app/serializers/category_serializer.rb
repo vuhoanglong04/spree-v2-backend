@@ -16,8 +16,7 @@ class CategorySerializer < ActiveModel::Serializer
   end
 
   def parent_name
-    object&.categories&.name
+    object&.category&.name
   end
-
 end
 
