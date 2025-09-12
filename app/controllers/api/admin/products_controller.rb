@@ -130,7 +130,7 @@ class Api::Admin::ProductsController < Api::BaseController
       :brand,
       :favourite_count,
       product_images_attributes: [:file, :alt, :position],
-      product_categories_attributes: [:product_id, :category_id],
+      product_categories_attributes: [:category_id],
       product_variants_attributes: [:id, :sku, :origin_price, :price, :stock_qty]
     )
   end
