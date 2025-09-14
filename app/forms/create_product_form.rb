@@ -28,7 +28,7 @@ class CreateProductForm
   private
 
   def valid_categories_attributes
-    if product_categories_attributes.empty?
+    if product_categories_attributes.blank?
       errors.add(:product_categories_attributes, "Categories are required")
     end
   end

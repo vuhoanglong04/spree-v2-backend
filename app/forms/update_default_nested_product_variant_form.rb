@@ -3,7 +3,7 @@
 class UpdateDefaultNestedProductVariantForm
   include ActiveModel::Model
   include CustomValidateForm
-  attr_accessor :id, :name, :sku, :origin_price, :price, :stock_qty
+  attr_accessor :id, :name, :sku, :origin_price, :price, :stock_qty, :_destroy
 
   validates :id,
             presence: true

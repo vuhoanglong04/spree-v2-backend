@@ -3,12 +3,13 @@ class Api::Admin::ProductsController < Api::BaseController
   def index
     page = params[:page] ||= 1
     per_page = params[:per_page] ||= 5
-    products = Product.all.page(page).per(per_page)
+    products = Product.with_deleted.order("updated_at desc").all.page(page).per(per_page)
     render_response(data: {
       products: ActiveModelSerializers::SerializableResource.new(products, each_serializer: ProductSerializer)
     },
                     message: "Get all products successfully!",
-                    status: 200
+                    status: 200,
+                    meta: pagination_meta(products)
     )
   end
 
@@ -42,6 +43,7 @@ class Api::Admin::ProductsController < Api::BaseController
       image_data[:url] = url
     end
     product_attrs[:product_variants_attributes]["0"][:name] = product_attrs[:name]
+    product_attrs[:product_variants_attributes]["0"][:image_url] = product_attrs[:product_images_attributes]["0"][:url]
     product = Product.new(product_attrs)
     if product.save
       render_response(
@@ -60,39 +62,25 @@ class Api::Admin::ProductsController < Api::BaseController
   def update
     product = Product.with_deleted.find_by!(id: params[:id])
     UpdateProductForm.new(update_product_params)
+    new_params = update_product_params.to_h.deep_dup
 
     ActiveRecord::Base.transaction do
-      unless product.update(update_product_params[:product])
+      # Delete old categories
+      ProductCategory.where(product_id: params[:id]).destroy_all
+      if new_params[:product_images_attributes].present?
+        new_params[:product_images_attributes].each do |_idx, img|
+          if img[:file].present?
+            url = S3UploadService.upload(img[:file], "products")
+            img.delete(:file)
+            img[:url] = url
+          else
+            img.delete(:file)
+          end
+        end
+      end
+
+      unless product.update(new_params)
         raise ValidationError.new("Validation failed", product.errors.to_hash(full_messages: true))
-      end
-      # Images
-      unless update_product_params[:images].empty?
-        new_image_ids = []
-        update_product_params[:images].each do |index, img|
-          image_data = img
-          url = S3UploadService.upload(image_data["file"], "products")
-          image_data.delete("file")
-          image_data[:url] = url
-          new_image = product.product_images.create!(image_data)
-          new_image_ids << new_image.id
-        end
-      end
-
-      # Categories
-      unless update_product_params[:categories].empty?
-        ProductCategory.where(product_id: product.id).destroy_all
-        update_product_params[:categories].each do |index, c|
-          product.product_categories.create!(c)
-        end
-      end
-
-      # Variant
-      if update_product_params[:product_variant].present?
-        variant = ProductVariant.with_deleted.find_by!(id: update_product_params[:product_variant][:id])
-        variant.update!(update_product_params[:product_variant])
-      end
-      unless update_product_params[:images].empty?
-        ProductImage.where(product_id: product.id).where.not(id: new_image_ids).destroy_all
       end
     end
 
@@ -109,21 +97,21 @@ class Api::Admin::ProductsController < Api::BaseController
   def destroy
     product = Product.without_deleted.find_by!(id: params[:id])
     product.destroy
-    render_response(message: "Deleted product", status: 200)
+    render_response(data: nil, message: "Deleted product", status: 200)
   end
 
   # POST /products/1/restore
   def restore
     product = Product.only_deleted.find_by!(id: params[:id])
     Product.restore(product.id)
-    render_response(message: "Restored product", status: 200)
+    render_response(data: nil, message: "Restored product", status: 200)
   end
 
   private
 
   # Only allow a list of trusted parameters through.
   def create_product_params
-    params.permit(
+    params.require(:product).permit(
       :name,
       :slug,
       :description,
@@ -136,23 +124,15 @@ class Api::Admin::ProductsController < Api::BaseController
   end
 
   def update_product_params
-    params.permit(
-      product: [
-        :name,
-        :slug,
-        :description,
-        :brand,
-        :favourite_count,
-      ],
-      categories: [:category_id],
-      images: [:file, :alt, :position],
-      product_variant: [
-        :id,
-        :sku,
-        :origin_price,
-        :price,
-        :stock_qty
-      ]
+    params.require(:product).permit(
+      :name,
+      :slug,
+      :description,
+      :brand,
+      :favourite_count,
+      product_categories_attributes: [:id, :category_id, :_destroy],
+      product_images_attributes: [:id, :file, :alt, :position, :url, :_destroy],
+      product_variants_attributes: [:id, :sku, :origin_price, :price, :stock_qty, :_destroy]
     )
   end
 end
