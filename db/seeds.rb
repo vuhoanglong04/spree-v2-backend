@@ -130,21 +130,38 @@ product_variants = products.first(5).map do |product|
 end
 
 # ---- Attributes & Values (5 each) ----
-attributes = %w[Color Size Material Brand Style].map do |attr|
-  ProductAttribute.create!(name: attr, slug: attr.downcase)
+attribute_names = %w[
+  Color Size Material Brand Style
+  Weight Length Height Width Capacity
+]
+
+attributes = attribute_names.map do |attr|
+  ProductAttribute.create!(
+    name: attr,
+    slug: attr.parameterize
+  )
 end
 
-attribute_values = attributes.map do |attr|
-  5.times.map { |i| AttributeValue.create!(product_attribute_id: attr.id, value: "#{attr.name} #{i + 1}") }
-end.flatten
+# ---- Attribute Values (5 each) ----
+attribute_values = attributes.flat_map do |attr|
+  5.times.map do |i|
+    AttributeValue.create!(
+      product_attribute_id: attr.id,
+      value: "#{attr.name} #{i + 1}"
+    )
+  end
+end
 
-# Assign attribute values to variants
+# ---- Assign attribute values to product variants ----
 product_variants.each do |variant|
   attr = attributes.sample
   val = attribute_values.select { |v| v.product_attribute_id == attr.id }.sample
-  ProductVariantAttrValue.create!(product_variant_id: variant.id, product_attribute_id: attr.id, attribute_value_id: val.id)
+  ProductVariantAttrValue.create!(
+    product_variant_id: variant.id,
+    product_attribute_id: attr.id,
+    attribute_value_id: val.id
+  )
 end
-
 # ---- Carts & Cart Items ----
 carts = account_users.first(5).map do |user|
   Cart.create!(account_user_id: user.id)

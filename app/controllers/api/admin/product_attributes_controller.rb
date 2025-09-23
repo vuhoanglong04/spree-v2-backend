@@ -3,11 +3,16 @@ class Api::Admin::ProductAttributesController < Api::BaseController
   def index
     page = params[:page] ||= 1
     per_page = params[:per_page] ||= 5
-    attributes = ProductAttribute.with_deleted.all.page(page).per(per_page)
+    attributes = ProductAttribute.with_deleted
+                                 .order(updated_at: :desc)
+    attributes = attributes.where("name ILIKE ?", "%#{params[:search_name]}%") if params[:search_name].present?
+    attributes = attributes.page(page).per(per_page)
+
     render_response(
       data: {
-        attributes: ActiveModelSerializers::SerializableResource.new(attributes, each_serializer: ProductAttributeSerializer),
+        product_attributes: ActiveModelSerializers::SerializableResource.new(attributes, each_serializer: ProductAttributeSerializer)
       },
+      meta: pagination_meta(attributes),
       message: "Get all attributes successfully",
       status: 200
     )
@@ -88,7 +93,7 @@ class Api::Admin::ProductAttributesController < Api::BaseController
                   :name,
                   :slug,
                   :description,
-                  attribute_values_attributes: [:id, :value, :extra]
+                  attribute_values_attributes: [:id, :value, :extra, :_destroy]
     )
   end
 end

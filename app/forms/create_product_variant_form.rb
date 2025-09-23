@@ -44,13 +44,13 @@ class CreateProductVariantForm
   private
 
   def validate_product_variant_attr_values_attributes
-    if product_variant_attr_values_attributes.empty?
+    if product_variant_attr_values_attributes.blank?
       errors.add(:product_variant_attr_values_attributes, "must not be empty")
       return
     end
 
     seen_pairs = Set.new
-    product_variant_attr_values_attributes.each do |index, item|
+    product_variant_attr_values_attributes.each do |item|
       form = ProductVariantAttributeValuesForm.new(item)
       unless form.valid?
         errors.add(:product_variant_attr_values_attributes, form.errors.full_messages)

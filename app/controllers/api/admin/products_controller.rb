@@ -43,7 +43,6 @@ class Api::Admin::ProductsController < Api::BaseController
       image_data[:url] = url
     end
     product_attrs[:product_variants_attributes]["0"][:name] = product_attrs[:name]
-    product_attrs[:product_variants_attributes]["0"][:image_url] = product_attrs[:product_images_attributes]["0"][:url]
     product = Product.new(product_attrs)
     if product.save
       render_response(
