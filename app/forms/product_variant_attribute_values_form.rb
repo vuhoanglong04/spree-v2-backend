@@ -4,7 +4,7 @@ class ProductVariantAttributeValuesForm
   include ActiveModel::Model
   include CustomValidateForm
 
-  attr_accessor :product_attribute_id, :attribute_value_id
+  attr_accessor :id, :product_attribute_id, :attribute_value_id
 
   validates :product_attribute_id,
             :attribute_value_id,
