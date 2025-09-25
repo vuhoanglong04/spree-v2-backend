@@ -2,7 +2,13 @@ class Api::Admin::ProductVariantsController < Api::BaseController
   # GET /product_variants or /product_variants.json
   def index
     product = Product.with_deleted.find_by!(id: params[:product_id])
-    product_variants = product.product_variants.with_deleted
+    raw_variant = product.product_variants.order(:created_at).last
+    product_variants = product.product_variants
+                              .with_deleted
+                              .where("id != ?", raw_variant.id)
+                              .order("updated_at desc")
+                              .to_a
+    product_variants.unshift(raw_variant) if raw_variant.present?
     render_response(
       data: {
         product_variants: ActiveModelSerializers::SerializableResource.new(product_variants, each_serializer: ProductVariantSerializer)
@@ -90,7 +96,7 @@ class Api::Admin::ProductVariantsController < Api::BaseController
                   :origin_price,
                   :price,
                   :stock_qty,
-                  product_variant_attr_values_attributes: [:id, :product_attribute_id, :attribute_value_id]
+                  product_variant_attr_values_attributes: [:id, :product_attribute_id, :attribute_value_id, :_destroy]
     )
   end
 end

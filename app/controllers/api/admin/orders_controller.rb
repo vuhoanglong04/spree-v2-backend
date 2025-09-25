@@ -1,9 +1,18 @@
-class Api::Admin::OrdersController < ApplicationController
-  before_action :set_order, only: %i[ show edit update destroy ]
+class Api::Admin::OrdersController < Api::BaseController
 
   # GET /orders or /orders.json
   def index
-    @orders = Order.all
+    page = params[:page] ||= 1
+    per_page = params[:per_page] ||= 5
+    orders = Order.order("updated_at desc").all.page(page).per(per_page)
+    render_response(
+      data: {
+        orders: ActiveModelSerializers::SerializableResource.new(orders, each_serializer: OrderSerializer)
+      },
+      message: "Get all orders successfully",
+      status: 200,
+      meta: pagination_meta(orders)
+    )
   end
 
   # GET /orders/1 or /orders/1.json
@@ -21,50 +30,37 @@ class Api::Admin::OrdersController < ApplicationController
 
   # POST /orders or /orders.json
   def create
-    @order = Order.new(order_params)
-
-    respond_to do |format|
-      if @order.save
-        format.html { redirect_to @order, notice: "Order was successfully created." }
-        format.json { render :show, status: :created, location: @order }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @order.errors, status: :unprocessable_entity }
-      end
-    end
   end
 
   # PATCH/PUT /orders/1 or /orders/1.json
   def update
-    respond_to do |format|
-      if @order.update(order_params)
-        format.html { redirect_to @order, notice: "Order was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @order }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @order.errors, status: :unprocessable_entity }
-      end
+    order = Order.find_by!(id: params[:id])
+    if order.update(order_params)
+      render_response(
+        data: {
+          order: ActiveModelSerializers::SerializableResource.new(order)
+        },
+        message: "Update order successfully!",
+        status: 200
+      )
+    else
+      raise ValidationError.new("Validation failed", account_user.errors.to_hash(full_messages: true))
     end
   end
 
   # DELETE /orders/1 or /orders/1.json
   def destroy
-    @order.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to orders_path, notice: "Order was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_order
-      @order = Order.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def order_params
-      params.fetch(:order, {})
-    end
+  def order_params
+    params.permit(:account_user_id,
+                  :currency,
+                  :status,
+                  :total_amount,
+                  :refunded_amount,
+                  :promotion_id,
+                  :description)
+  end
 end

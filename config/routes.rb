@@ -32,6 +32,7 @@ Rails.application.routes.draw do
           post :restore
         end
       end
+      resources :orders, only: [:index, :update]
       get "categories/search/list", to: 'categories#search'
     end
   end
