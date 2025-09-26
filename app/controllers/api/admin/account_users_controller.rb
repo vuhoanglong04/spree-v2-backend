@@ -4,7 +4,10 @@ class Api::Admin::AccountUsersController < Api::BaseController
   def index
     page = params[:page] ||= 1
     per_page = params[:per_page] ||= 5
-    account_users = AccountUser.select("id,email,status,confirmed_at,created_at,updated_at").page(page).per(per_page)
+    account_users = AccountUser
+                      .select("id,email,status,main_role,confirmed_at,created_at,updated_at")
+                      .order("created_at DESC")
+                      .page(page).per(per_page)
     render_response(data:
                       {
                         account_users: ActiveModelSerializers::SerializableResource.new(account_users, each_serializer: AccountUserSerializer)
@@ -57,7 +60,7 @@ class Api::Admin::AccountUsersController < Api::BaseController
   def update
     UpdateAccountUserForm.new(account_user_params)
     account_user = AccountUser.find_by!(id: params[:id])
-    S3UploadService.delete_by_url(account_user.user_profile.avatar_url) if account_user.user_profile.avatar_url.present?
+    S3UploadService.delete_by_url(account_user.user_profile.avatar_url) unless account_user&.user_profile&.avatar_url.nil?
     if account_user.update(account_user_params)
       avatar_url = S3UploadService.upload(account_user_params[:user_profile_attributes][:avatar_url], "account_users")
       account_user.user_profile.avatar_url = avatar_url
@@ -82,8 +85,7 @@ class Api::Admin::AccountUsersController < Api::BaseController
 
   def account_user_params
     params
-      .require(:account_user)
-      .permit(:id, :email, :status, :password, :password_confirmation, :main_role,
+      .permit(:email, :status, :password, :password_confirmation, :main_role,
               user_profile_attributes: [:full_name, :phone, :avatar_url, :locale, :time_zone])
   end
 end

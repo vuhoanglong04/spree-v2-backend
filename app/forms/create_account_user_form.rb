@@ -3,7 +3,7 @@
 class CreateAccountUserForm
   include ActiveModel::Model
   include CustomValidateForm
-  attr_accessor :email, :status, :password, :password_confirmation, :user_profile_attributes
+  attr_accessor :main_role, :email, :status, :password, :password_confirmation, :user_profile_attributes
   validates :email,
             presence: { message: "Email is required" },
             format: { with: URI::MailTo::EMAIL_REGEXP, message: "Invalid email format" }
@@ -12,9 +12,7 @@ class CreateAccountUserForm
             presence: true
 
   validates :phone,
-            presence: true,
-            format: { with: /\A\+?[0-9]{7,15}\z/,
-                      message: "must be a valid phone number" }
+            presence: true
 
   validates :avatar_url,
             presence: true,
@@ -27,9 +25,7 @@ class CreateAccountUserForm
                          message: "%{value} is not supported" }
 
   validates :time_zone,
-            presence: true,
-            inclusion: { in: ActiveSupport::TimeZone.all.map(&:name),
-                         message: "%{value} is not a valid time zone" }
+            presence: true
 
   validates :password,
             presence: { message: "Password is required" },
