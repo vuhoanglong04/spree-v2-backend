@@ -17,14 +17,12 @@ class AccountUser < ApplicationRecord
             presence: { message: "Email is required" },
             uniqueness: true,
             format: { with: URI::MailTo::EMAIL_REGEXP, message: "Invalid email format" }
-  validates :password,
-            presence: { message: "Password is required" },
-            length: { minimum: 6, message: "Password is too short (minimum is 6 characters)" }
 
   # Relationships
   has_many :user_identities, dependent: :destroy
   has_one :user_profile, dependent: :destroy
   has_many :user_roles, dependent: :destroy
   has_one :cart, dependent: :destroy
+  has_many :cart_items, through: :cart
   accepts_nested_attributes_for :user_profile
 end

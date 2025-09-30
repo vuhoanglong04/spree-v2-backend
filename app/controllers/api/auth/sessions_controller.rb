@@ -3,7 +3,6 @@
 class Api::Auth::SessionsController < Devise::SessionsController
   include ResponseHandler
   include ExceptionHandler
-  skip_before_action :verify_signed_out_user, only: [:destroy]
   # GET /resource/sign_in
   # def new
   # end
@@ -27,11 +26,11 @@ class Api::Auth::SessionsController < Devise::SessionsController
 
   # DELETE /resource/sign_out
   def destroy
-    token = request.cookies['access_token'] ||
-            request.headers['Authorization']&.split(' ')&.last
+    token = request.cookies["access_token"] ||
+            request.headers["Authorization"]&.split(" ")&.last
     if token.present?
-      payload = JWT.decode(token, ENV["JWT_SECRET_KEY"], true, algorithm: 'HS256')[0]
-      user_id = payload['sub'] || payload['user_id']
+      payload = JWT.decode(token, ENV["JWT_SECRET_KEY"], true, algorithm: "HS256")[0]
+      user_id = payload["sub"] || payload["user_id"]
       user = AccountUser.find_by(id: user_id)
       JwtRedisDenyList.revoke_jwt(payload, user) if user.present?
     end

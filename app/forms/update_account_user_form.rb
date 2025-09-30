@@ -17,7 +17,8 @@ class UpdateAccountUserForm
   validates :avatar_url,
             presence: true,
             file_size: { less_than_or_equal_to: 5.megabytes, message: "Avatar must be less than or equal to 5MB" },
-            file_content_type: { allow: %w[image/jpeg image/png], message: "Avatar must be image" }
+            file_content_type: { allow: %w[image/jpeg image/png], message: "Avatar must be image" },
+            allow_blank: true
 
   validates :locale,
             presence: true,
@@ -29,10 +30,12 @@ class UpdateAccountUserForm
 
   validates :password,
             presence: { message: "Password is required" },
-            length: { minimum: 6, message: "Password is too short (minimum is 6 characters)" }
+            length: { minimum: 6, message: "Password is too short (minimum is 6 characters)" },
+            allow_blank: true
 
   validates :password_confirmation,
-            presence: { message: "Password confirmation is required" }
+            presence: { message: "Password confirmation is required" },
+            allow_blank: true
 
   validate :passwords_match
 
@@ -44,6 +47,7 @@ class UpdateAccountUserForm
   private
 
   def passwords_match
+    return if password&.nil?
     return if password == password_confirmation
     errors.add(:password_confirmation, "Password doesn't match")
   end

@@ -4,4 +4,5 @@ class AccountUserSerializer < ActiveModel::Serializer
   attribute :confirmed_at, if: -> { object.confirmed_at.present? }
   has_many :user_identities
   has_one :user_profile
+
 end

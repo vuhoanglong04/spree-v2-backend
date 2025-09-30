@@ -60,11 +60,13 @@ class Api::Admin::AccountUsersController < Api::BaseController
   def update
     UpdateAccountUserForm.new(account_user_params)
     account_user = AccountUser.find_by!(id: params[:id])
-    S3UploadService.delete_by_url(account_user.user_profile.avatar_url) unless account_user&.user_profile&.avatar_url.nil?
     if account_user.update(account_user_params)
-      avatar_url = S3UploadService.upload(account_user_params[:user_profile_attributes][:avatar_url], "account_users")
-      account_user.user_profile.avatar_url = avatar_url
-      account_user.save
+      unless account_user_params[:user_profile_attributes][:avatar_url].nil?
+        S3UploadService.delete_by_url(account_user.user_profile.avatar_url) unless account_user.user_profile&.avatar_url.nil?
+        avatar_url = S3UploadService.upload(account_user_params[:user_profile_attributes][:avatar_url], "account_users")
+        account_user.user_profile.avatar_url = avatar_url
+        account_user.save
+      end
       render_response(data: {
         account_user: account_user
       },
