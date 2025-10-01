@@ -1,5 +1,4 @@
-class Api::Admin::RolePermissionsController < Api::BaseController
-
+class Api::Admin::RolePermissionsController < Api::Admin::BaseAdminController
   # GET /role_permissions or /role_permissions.json
   def index
   end

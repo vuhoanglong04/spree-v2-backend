@@ -1,4 +1,4 @@
-class Api::Admin::CategoriesController < Api::BaseController
+class Api::Admin::CategoriesController < Api::Admin::BaseAdminController
 
   # GET /categories or /categories.json
   def index

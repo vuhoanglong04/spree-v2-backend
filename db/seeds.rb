@@ -30,8 +30,9 @@ roles = %w[admin manager staff customer guest].map do |role|
   Role.create!(name: role.capitalize, description: "#{role} role")
 end
 
-permissions = %w[read write update delete manage].map do |action|
-  Permission.create!(action_name: action, subject: "Product", description: "#{action} permission")
+permissions = %w[index create update destroy restore authorize].map do |action|
+  Permission.create!(action_name: action, subject: "product", description: "#{action} permission")
+  Permission.create!(action_name: action, subject: "category", description: "#{action} permission")
 end
 
 # Assign roles to users

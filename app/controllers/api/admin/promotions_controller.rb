@@ -1,4 +1,4 @@
-class Api::Admin::PromotionsController < Api::BaseController
+class Api::Admin::PromotionsController < Api::Admin::BaseAdminController
 
   # GET /promotions or /promotions.json
   def index

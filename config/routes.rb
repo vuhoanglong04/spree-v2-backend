@@ -38,7 +38,7 @@ Rails.application.routes.draw do
   end
   post "api/payment/stripe", to: "api/payment#stripe"
   post "api/payment/stripe/web_hook", to: "api/payment#stripe_webhook"
-
+  get "api/admin/me", to: "api/admin/base_admin#me"
   devise_for :account_users, path: "api/auth", controllers: {
     sessions: 'api/auth/sessions',
     registrations: 'api/auth/registrations',

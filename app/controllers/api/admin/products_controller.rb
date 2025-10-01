@@ -1,4 +1,4 @@
-class Api::Admin::ProductsController < Api::BaseController
+class Api::Admin::ProductsController < Api::Admin::BaseAdminController
   # GET /products or /products.json
   def index
     page = params[:page] ||= 1

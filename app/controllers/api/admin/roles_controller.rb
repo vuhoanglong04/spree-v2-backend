@@ -1,5 +1,4 @@
-class Api::Admin::RolesController < Api::BaseController
-
+class Api::Admin::RolesController < Api::Admin::BaseAdminController
   # GET /roles or /roles.json
   def index
     page = params[:page] ||= 1

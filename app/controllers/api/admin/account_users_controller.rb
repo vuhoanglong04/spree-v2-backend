@@ -1,4 +1,4 @@
-class Api::Admin::AccountUsersController < Api::BaseController
+class Api::Admin::AccountUsersController < Api::Admin::BaseAdminController
 
   # GET /account_users
   def index

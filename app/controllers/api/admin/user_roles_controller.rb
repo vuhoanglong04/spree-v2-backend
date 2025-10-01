@@ -1,4 +1,4 @@
-class Api::Admin::UserRolesController < Api::BaseController
+class Api::Admin::UserRolesController < Api::Admin::BaseAdminController
 
   # GET /user_roles or /user_roles.json
   def index

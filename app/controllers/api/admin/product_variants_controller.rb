@@ -1,4 +1,4 @@
-class Api::Admin::ProductVariantsController < Api::BaseController
+class Api::Admin::ProductVariantsController < Api::Admin::BaseAdminController
   # GET /product_variants or /product_variants.json
   def index
     product = Product.with_deleted.find_by!(id: params[:product_id])

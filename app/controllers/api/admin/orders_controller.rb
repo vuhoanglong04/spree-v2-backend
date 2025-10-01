@@ -1,4 +1,4 @@
-class Api::Admin::OrdersController < Api::BaseController
+class Api::Admin::OrdersController < Api::Admin::BaseAdminController
 
   # GET /orders or /orders.json
   def index
