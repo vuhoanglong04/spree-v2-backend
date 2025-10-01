@@ -3,6 +3,7 @@ class Api::BaseController < ActionController::API
   include ExceptionHandler
   include ResponseHandler
   include PaginateHandler
+  include Pundit::Authorization
 
   private
 
