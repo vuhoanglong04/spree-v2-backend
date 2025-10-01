@@ -55,6 +55,7 @@ class Api::Admin::RolesController < Api::Admin::BaseAdminController
   # PATCH/PUT /roles/1 or /roles/1.json
   def update
     role = Role.find_by!(id: params[:id])
+    role.role_permissions.destroy_all
     if role.update(role_params)
       render_response(
         data: {

@@ -14,6 +14,15 @@ puts "Seeding database..."
 ].each(&:delete_all)
 
 # ---- Account Users (15) ----
+user = AccountUser.create(
+  email: "longvulinhhoang@gmail.com",
+  password: "123456",
+  status: 1,
+  main_role: 1,
+  confirmed_at: Time.now
+)
+user.skip_confirmation!
+user.save
 account_users = 15.times.map do |i|
   user = AccountUser.create(
     email: "user#{i + 1}@example.com",
@@ -30,9 +39,27 @@ roles = %w[admin manager staff customer guest].map do |role|
   Role.create!(name: role.capitalize, description: "#{role} role")
 end
 
-permissions = %w[index create update destroy restore authorize].map do |action|
-  Permission.create!(action_name: action, subject: "product", description: "#{action} permission")
-  Permission.create!(action_name: action, subject: "category", description: "#{action} permission")
+subjects = %w[
+  category
+  product
+  product_variant
+  account_user
+  order
+  promotion
+  role
+  attribute
+]
+
+actions = %w[index create update destroy restore authorize]
+permissions = []
+subjects.each do |subject|
+  actions.each do |action|
+    permissions << Permission.create!(
+      action_name: action,
+      subject: subject,
+      description: "#{action} #{subject} permission"
+    )
+  end
 end
 
 # Assign roles to users
@@ -58,9 +85,9 @@ end
 
 # Create categories with slug
 electronics = Category.create!(name: "Electronics", slug: "electronics")
-laptops     = Category.create!(name: "Laptops", slug: "laptops", parent_id: electronics.id)
-gaming      = Category.create!(name: "Gaming", slug: "gaming", parent_id: laptops.id)
-phones      = Category.create!(name: "Phones", slug: "phones", parent_id: electronics.id)
+laptops = Category.create!(name: "Laptops", slug: "laptops", parent_id: electronics.id)
+gaming = Category.create!(name: "Gaming", slug: "gaming", parent_id: laptops.id)
+phones = Category.create!(name: "Phones", slug: "phones", parent_id: electronics.id)
 
 categories = [electronics, laptops, gaming, phones]
 
