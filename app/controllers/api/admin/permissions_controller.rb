@@ -3,23 +3,33 @@ class Api::Admin::PermissionsController < Api::BaseController
   # GET /permissions or /permissions.json
   def index
     page = params[:page] ||= 1
-    per_page = params[:per_page] ||= 5
+    per_page = params[:per_page] ||= 50
     permissions = Permission.all.page(page).per(per_page)
-    render_response(data: {
-      permissions: permissions
-    },
-                    message: "Get all permissions successfully.",
-                    status: 200)
+    permissions = permissions.group_by(&:subject).map do |subject, perms|
+      {
+        permissions: ActiveModelSerializers::SerializableResource.new(
+          perms,
+          each_serializer: PermissionSerializer
+        )
+      }
+    end
+    render_response(
+      data: {
+        permissions: permissions
+      },
+      message: "Get all permissions successfully.",
+      status: 200)
   end
 
   # GET /permissions/1 or /permissions/1.json
   def show
     permission = Permission.find_by!(id: params[:id])
-    render_response(data: {
-      permissions: permission
-    },
-                    message: "Get permission successfully.",
-                    status: 200)
+    render_response(
+      data: {
+        permissions: ActiveModelSerializers::SerializableResource.new(permissions, serializer: PermissionSerializer)
+      },
+      message: "Get permission successfully.",
+      status: 200)
   end
 
   # GET /permissions/new
@@ -34,11 +44,12 @@ class Api::Admin::PermissionsController < Api::BaseController
   def create
     permission = Permission.new(permission_params)
     if permission.save
-      render_response(data: {
-        permission: permission
-      },
-                      message: "Create permission successfully",
-                      status: 201
+      render_response(
+        data: {
+          permissions: ActiveModelSerializers::SerializableResource.new(permissions, serializer: PermissionSerializer)
+        },
+        message: "Create permission successfully",
+        status: 201
       )
     else
       raise ValidationError.new("Validation failed", permission.errors.to_hash(full_messages: true))
@@ -49,11 +60,12 @@ class Api::Admin::PermissionsController < Api::BaseController
   def update
     permission = Permission.find_by!(id: params[:id])
     if permission.update(permission_params)
-      render_response(data: {
-        permission: permission
-      },
-                      message: "Update permission successfully",
-                      status: 201
+      render_response(
+        data: {
+          permissions: ActiveModelSerializers::SerializableResource.new(permissions, serializer: PermissionSerializer)
+        },
+        message: "Update permission successfully",
+        status: 201
       )
     else
       raise ValidationError.new("Validation failed", permission.errors.to_hash(full_messages: true))

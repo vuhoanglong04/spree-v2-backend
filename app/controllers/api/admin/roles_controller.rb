@@ -8,7 +8,7 @@ class Api::Admin::RolesController < Api::BaseController
     render_response(
       data:
         {
-          roles: roles
+          roles: ActiveModelSerializers::SerializableResource.new(roles, each_serializer: RoleSerializer)
         },
       message: "Get all role successfully",
       meta: pagination_meta(roles),
@@ -43,7 +43,7 @@ class Api::Admin::RolesController < Api::BaseController
     if role.save
       render_response(
         data: {
-          role: role
+          role: ActiveModelSerializers::SerializableResource.new(role, serializer: RoleSerializer)
         },
         message: "Create role successfully",
         status: 201
@@ -59,7 +59,7 @@ class Api::Admin::RolesController < Api::BaseController
     if role.update(role_params)
       render_response(
         data: {
-          role: role
+          role: ActiveModelSerializers::SerializableResource.new(role, serializer: RoleSerializer)
         },
         message: "Update role successfully",
         status: 201
@@ -84,7 +84,7 @@ class Api::Admin::RolesController < Api::BaseController
                   :id,
                   :name,
                   :description,
-                  role_permissions_attributes: [:permission_id]
+                  role_permissions_attributes: [:permission_id, :_destroy]
     )
   end
 end

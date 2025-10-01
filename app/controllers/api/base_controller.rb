@@ -9,7 +9,6 @@ class Api::BaseController < ActionController::API
 
   def authenticate_admin!
     authenticate_account_user!
-
     unless current_account_user&.role == "admin"
       render_response(
         message: "You are not authorized",
