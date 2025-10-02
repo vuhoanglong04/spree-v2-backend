@@ -4,30 +4,16 @@ class UpdateAccountUserForm
   include ActiveModel::Model
   include CustomValidateForm
   attr_accessor :main_role, :email, :status, :password, :password_confirmation, :user_profile_attributes
-  validates :email,
-            presence: { message: "Email is required" },
-            format: { with: URI::MailTo::EMAIL_REGEXP, message: "Invalid email format" }
-
-  validates :full_name,
-            presence: true
-
-  validates :phone,
-            presence: true
-
   validates :avatar_url,
             presence: true,
             file_size: { less_than_or_equal_to: 5.megabytes, message: "Avatar must be less than or equal to 5MB" },
             file_content_type: { allow: %w[image/jpeg image/png], message: "Avatar must be image" },
             allow_blank: true
-
   validates :locale,
             presence: true,
             inclusion: { in: %w[en vi fr de jp],
-                         message: "%{value} is not supported" }
-
-  validates :time_zone,
-            presence: true
-
+                         message: "%{value} is not supported" },
+            allow_blank: true
   validates :password,
             presence: { message: "Password is required" },
             length: { minimum: 6, message: "Password is too short (minimum is 6 characters)" },
@@ -61,11 +47,12 @@ class UpdateAccountUserForm
   end
 
   def avatar_url
-    user_profile_attributes[:avatar_url]
+    user_profile_attributes[:avatar_url] if user_profile_attributes && user_profile_attributes[:avatar_url].present?
+    nil
   end
 
   def locale
-    user_profile_attributes[:locale]
+    user_profile_attributes[:locale] if user_profile_attributes && user_profile_attributes[:locale].present?
   end
 
   def time_zone

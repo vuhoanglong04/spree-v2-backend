@@ -1,10 +1,10 @@
-class Api::Admin::PromotionsController < Api::BaseController
-
+class Api::Admin::PromotionsController < Api::Admin::BaseAdminController
+  before_action :authorize_account_user
   # GET /promotions or /promotions.json
   def index
     page = params[:page] ||= 1
     per_page = params[:per_page] ||= 5
-    promotions = Promotion.with_deleted.all.page(page).per(per_page)
+    promotions = Promotion.with_deleted.order(:created_at).all.page(page).per(per_page)
     render_response(
       data: {
         promotions: ActiveModelSerializers::SerializableResource.new(promotions, each_serializer: PromotionSerializer)
@@ -95,5 +95,9 @@ class Api::Admin::PromotionsController < Api::BaseController
                   :start_date,
                   :end_date,
     )
+  end
+
+  def authorize_account_user
+    authorize current_account_user
   end
 end

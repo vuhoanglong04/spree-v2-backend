@@ -1,5 +1,5 @@
-class Api::Admin::RolesController < Api::BaseController
-
+class Api::Admin::RolesController < Api::Admin::BaseAdminController
+  before_action :authorize_account_user
   # GET /roles or /roles.json
   def index
     page = params[:page] ||= 1
@@ -8,7 +8,7 @@ class Api::Admin::RolesController < Api::BaseController
     render_response(
       data:
         {
-          roles: roles
+          roles: ActiveModelSerializers::SerializableResource.new(roles, each_serializer: RoleSerializer)
         },
       message: "Get all role successfully",
       meta: pagination_meta(roles),
@@ -43,7 +43,7 @@ class Api::Admin::RolesController < Api::BaseController
     if role.save
       render_response(
         data: {
-          role: role
+          role: ActiveModelSerializers::SerializableResource.new(role, serializer: RoleSerializer)
         },
         message: "Create role successfully",
         status: 201
@@ -56,10 +56,11 @@ class Api::Admin::RolesController < Api::BaseController
   # PATCH/PUT /roles/1 or /roles/1.json
   def update
     role = Role.find_by!(id: params[:id])
+    role.role_permissions.destroy_all
     if role.update(role_params)
       render_response(
         data: {
-          role: role
+          role: ActiveModelSerializers::SerializableResource.new(role, serializer: RoleSerializer)
         },
         message: "Update role successfully",
         status: 201
@@ -84,7 +85,11 @@ class Api::Admin::RolesController < Api::BaseController
                   :id,
                   :name,
                   :description,
-                  role_permissions_attributes: [:permission_id]
+                  role_permissions_attributes: [:permission_id, :_destroy]
     )
+  end
+
+  def authorize_account_user
+    authorize current_account_user
   end
 end

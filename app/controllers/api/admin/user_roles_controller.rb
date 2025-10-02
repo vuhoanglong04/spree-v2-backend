@@ -1,14 +1,7 @@
-class Api::Admin::UserRolesController < Api::BaseController
+class Api::Admin::UserRolesController < Api::Admin::BaseAdminController
 
   # GET /user_roles or /user_roles.json
   def index
-    user_roles = UserRole.where(account_user_id: params[:account_user_id])
-    render_response(data: {
-      roles: ActiveModelSerializers::SerializableResource.new(user_roles, each_serializer: UserRoleSerializer)
-    },
-                    message: "Get all role successfully",
-                    status: 200
-    )
   end
 
   # GET /user_roles/1 or /user_roles/1.json
@@ -25,12 +18,16 @@ class Api::Admin::UserRolesController < Api::BaseController
 
   # POST /user_roles or /user_roles.json
   def create
-    user_role = UserRole.new(user_role_params)
-    if user_role.save
-      render_response(message: "Added role", status: 201)
-    else
-      raise ValidationError.new("Validation failed", user_role.errors.to_hash(full_messages: true))
+    authorize current_account_user, :role?, policy_class: AccountUserPolicy
+    UserRole.where(account_user_id: params[:account_user_id]).delete_all
+    user_role_params.each do |user_role|
+      new_user_role = UserRole.create(user_role)
+      if new_user_role.save
+      else
+        raise ValidationError.new("Validation failed", new_user_role.errors.to_hash(full_messages: true))
+      end
     end
+    render_response(message: "Change roles successfully", status: 201)
   end
 
   # PATCH/PUT /user_roles/1 or /user_roles/1.json
@@ -46,7 +43,10 @@ class Api::Admin::UserRolesController < Api::BaseController
   private
 
   # Only allow a list of trusted parameters through.
+
+  private
+
   def user_role_params
-    params.permit(:id, :account_user_id, :role_id)
+    params.permit(user_roles: [:id, :account_user_id, :role_id])[:user_roles]
   end
 end

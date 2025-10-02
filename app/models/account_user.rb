@@ -1,4 +1,5 @@
 class AccountUser < ApplicationRecord
+  after_destroy :destroy_avatar
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -22,7 +23,22 @@ class AccountUser < ApplicationRecord
   has_many :user_identities, dependent: :destroy
   has_one :user_profile, dependent: :destroy
   has_many :user_roles, dependent: :destroy
+  has_many :roles, through: :user_roles
+  has_many :role_permissions, through: :roles
+  has_many :permissions, through: :role_permissions
   has_one :cart, dependent: :destroy
   has_many :cart_items, through: :cart
   accepts_nested_attributes_for :user_profile
+
+  def has_permission?(subject, action)
+    permissions.distinct.exists?(subject: subject, action_name: action)
+  end
+
+  private
+
+  def destroy_avatar
+    if self&.user_profile&.avatar_url.present?
+      S3UploadService.delete_by_url(self.user_profile.avatar_url)
+    end
+  end
 end

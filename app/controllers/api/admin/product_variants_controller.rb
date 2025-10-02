@@ -1,4 +1,5 @@
-class Api::Admin::ProductVariantsController < Api::BaseController
+class Api::Admin::ProductVariantsController < Api::Admin::BaseAdminController
+  before_action :authorize_account_user
   # GET /product_variants or /product_variants.json
   def index
     product = Product.with_deleted.find_by!(id: params[:product_id])
@@ -98,5 +99,9 @@ class Api::Admin::ProductVariantsController < Api::BaseController
                   :stock_qty,
                   product_variant_attr_values_attributes: [:id, :product_attribute_id, :attribute_value_id, :_destroy]
     )
+  end
+
+  def authorize_account_user
+    authorize current_account_user
   end
 end

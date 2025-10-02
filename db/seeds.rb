@@ -14,34 +14,73 @@ puts "Seeding database..."
 ].each(&:delete_all)
 
 # ---- Account Users (15) ----
+user = AccountUser.create!(
+  email: "longvulinhhoang@gmail.com",
+  password: "123456",
+  status: 1,
+  main_role: 1,
+  confirmed_at: Time.now
+)
+user.skip_confirmation!
+user.save!
+
 account_users = 15.times.map do |i|
-  user = AccountUser.create(
+  u = AccountUser.new(
     email: "user#{i + 1}@example.com",
     password: "123456",
     status: 0,
     confirmed_at: Time.now
   )
-  user.skip_confirmation!
-  user.save
-  user
+  u.skip_confirmation!
+  u.save!
+  u
 end
+
 # ---- Roles & Permissions (5 each) ----
 roles = %w[admin manager staff customer guest].map do |role|
   Role.create!(name: role.capitalize, description: "#{role} role")
 end
 
-permissions = %w[read write update delete manage].map do |action|
-  Permission.create!(action_name: action, subject: "Product", description: "#{action} permission")
+subjects = %w[
+  category
+  product
+  product_variant
+  user
+  order
+  promotion
+  role
+  attribute
+]
+
+actions = %w[index show create update destroy restore role]
+
+permissions = subjects.flat_map do |subject|
+  actions.map do |action|
+    Permission.create!(
+      action_name: action,
+      subject: subject,
+      description: "#{action} #{subject} permission"
+    )
+  end
 end
 
-# Assign roles to users
-account_users.each_with_index do |user, i|
-  UserRole.create!(account_user_id: user.id, role_id: roles[i % roles.size].id)
-end
-
-# Assign permissions to roles
+# Assign permissions to roles (default: 1 each just for demo)
 roles.each_with_index do |role, i|
   RolePermission.create!(role_id: role.id, permission_id: permissions[i % permissions.size].id)
+end
+
+# ---- Give Admin ALL permissions ----
+admin_role = roles.find { |r| r.name.downcase == "admin" }
+permissions.each do |perm|
+  RolePermission.find_or_create_by!(role_id: admin_role.id, permission_id: perm.id)
+end
+
+# ---- Assign Admin role to the first user ----
+UserRole.find_or_create_by!(account_user_id: user.id, role_id: admin_role.id)
+
+# ---- Assign roles to the rest of the users ----
+account_users.each_with_index do |u, i|
+  UserRole.create!(account_user_id: u.id, role_id: roles[i % roles.size].id)
 end
 
 # ---- User Profiles (5 only, attach to first 5 users) ----
@@ -57,9 +96,9 @@ end
 
 # Create categories with slug
 electronics = Category.create!(name: "Electronics", slug: "electronics")
-laptops     = Category.create!(name: "Laptops", slug: "laptops", parent_id: electronics.id)
-gaming      = Category.create!(name: "Gaming", slug: "gaming", parent_id: laptops.id)
-phones      = Category.create!(name: "Phones", slug: "phones", parent_id: electronics.id)
+laptops = Category.create!(name: "Laptops", slug: "laptops", parent_id: electronics.id)
+gaming = Category.create!(name: "Gaming", slug: "gaming", parent_id: laptops.id)
+phones = Category.create!(name: "Phones", slug: "phones", parent_id: electronics.id)
 
 categories = [electronics, laptops, gaming, phones]
 

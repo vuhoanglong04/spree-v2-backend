@@ -1,5 +1,5 @@
-class Api::Admin::OrdersController < Api::BaseController
-
+class Api::Admin::OrdersController < Api::Admin::BaseAdminController
+  before_action :authorize_account_user
   # GET /orders or /orders.json
   def index
     page = params[:page] ||= 1
@@ -62,5 +62,9 @@ class Api::Admin::OrdersController < Api::BaseController
                   :refunded_amount,
                   :promotion_id,
                   :description)
+  end
+
+  def authorize_account_user
+    authorize current_account_user
   end
 end
