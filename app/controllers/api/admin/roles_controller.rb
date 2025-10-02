@@ -1,4 +1,5 @@
 class Api::Admin::RolesController < Api::Admin::BaseAdminController
+  before_action :authorize_account_user
   # GET /roles or /roles.json
   def index
     page = params[:page] ||= 1
@@ -86,5 +87,9 @@ class Api::Admin::RolesController < Api::Admin::BaseAdminController
                   :description,
                   role_permissions_attributes: [:permission_id, :_destroy]
     )
+  end
+
+  def authorize_account_user
+    authorize current_account_user
   end
 end

@@ -9,5 +9,9 @@ module ExceptionHandler
     rescue_from ActiveRecord::RecordInvalid do |e|
       render_response(message: "Validation failed", errors: e.record.errors.full_messages, status: 401)
     end
+
+    rescue_from Pundit::NotAuthorizedError do |e|
+      render_response(message: "You are not permitted", status: 401)
+    end
   end
 end

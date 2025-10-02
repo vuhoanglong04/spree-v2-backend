@@ -1,5 +1,5 @@
 class Api::Admin::CategoriesController < Api::Admin::BaseAdminController
-
+  before_action :authorize_account_user
   # GET /categories or /categories.json
   def index
     page = params[:page] ||= 1
@@ -112,5 +112,9 @@ class Api::Admin::CategoriesController < Api::Admin::BaseAdminController
   # Only allow a list of trusted parameters through.
   def category_params
     params.permit(:page, :per_page, :id, :name, :slug, :position, :parent_id)
+  end
+
+  def authorize_account_user
+    authorize current_account_user
   end
 end

@@ -1,4 +1,5 @@
 class Api::Admin::ProductsController < Api::Admin::BaseAdminController
+  before_action :authorize_account_user
   # GET /products or /products.json
   def index
     page = params[:page] ||= 1
@@ -133,5 +134,9 @@ class Api::Admin::ProductsController < Api::Admin::BaseAdminController
       product_images_attributes: [:id, :file, :alt, :position, :url, :_destroy],
       product_variants_attributes: [:id, :sku, :origin_price, :price, :stock_qty, :_destroy]
     )
+  end
+
+  def authorize_account_user
+    authorize current_account_user
   end
 end

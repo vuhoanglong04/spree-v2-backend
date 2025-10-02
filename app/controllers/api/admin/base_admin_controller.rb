@@ -9,12 +9,14 @@ class Api::Admin::BaseAdminController < ActionController::API
     authenticate_account_user!
     render_response(message: "Authorized", status: 200)
   end
+
   def authenticate_account_user!
-    unless current_account_user&.main_role == "staff"
-      render_response(
-        message: "You are not authorized",
-        status: 403
-      )
+    if current_account_user.nil? || current_account_user&.main_role != "staff"
+      raise Pundit::NotAuthorizedError
     end
+  end
+
+  def pundit_user
+    current_account_user
   end
 end

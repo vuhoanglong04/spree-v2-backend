@@ -55,4 +55,8 @@ class Api::Admin::PermissionsController < Api::Admin::BaseAdminController
   def update_permission_params
     params.permit(:id, :subject, :action, :_destroy)
   end
+
+  def permission_params
+    params.permit(:page, :per_page, :id, :action_name, :subject, :description)
+  end
 end

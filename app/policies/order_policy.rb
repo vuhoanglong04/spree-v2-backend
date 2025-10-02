@@ -1,4 +1,4 @@
-class AccountUserPolicy < ApplicationPolicy
+class OrderPolicy < ApplicationPolicy
   # NOTE: Up to Pundit v2.3.1, the inheritance was declared as
   # `Scope < Scope` rather than `Scope < ApplicationPolicy::Scope`.
   # In most cases the behavior will be identical, but if updating existing
@@ -13,30 +13,18 @@ class AccountUserPolicy < ApplicationPolicy
   end
 
   def index?
-    current_account_user.has_permission?("user", "index")
+    current_account_user.has_permission?("order", "index")
   end
 
   def show?
-    current_account_user.has_permission?("user", "show")
+    current_account_user.has_permission?("order", "show")
   end
 
   def create?
-    current_account_user.has_permission?("user", "create")
+    current_account_user.has_permission?("order", "index")
   end
 
   def update?
-    current_account_user.has_permission?("user", "update")
-  end
-
-  def destroy?
-    current_account_user.has_permission?("user", "destroy")
-  end
-
-  def restore?
-    current_account_user.has_permission?("user", "restore")
-  end
-
-  def role?
-    current_account_user.has_permission?("user", "role")
+    current_account_user.has_permission?("order", "update")
   end
 end

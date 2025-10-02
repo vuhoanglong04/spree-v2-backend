@@ -1,4 +1,5 @@
 class Api::Admin::ProductAttributesController < Api::Admin::BaseAdminController
+  before_action :authorize_account_user
   # GET /attributes or /attributes.json
   def index
     page = params[:page] ||= 1
@@ -95,5 +96,9 @@ class Api::Admin::ProductAttributesController < Api::Admin::BaseAdminController
                   :description,
                   attribute_values_attributes: [:id, :value, :extra, :_destroy]
     )
+  end
+
+  def authorize_account_user
+    authorize current_account_user
   end
 end
