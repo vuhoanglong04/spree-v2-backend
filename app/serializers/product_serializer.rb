@@ -4,6 +4,7 @@ class ProductSerializer < ActiveModel::Serializer
              :name,
              :slug,
              :description,
+             :total_sold,
              :brand,
              :favourite_count,
              :deleted_at,

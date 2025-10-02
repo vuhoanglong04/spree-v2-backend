@@ -99,8 +99,9 @@ electronics = Category.create!(name: "Electronics", slug: "electronics")
 laptops = Category.create!(name: "Laptops", slug: "laptops", parent_id: electronics.id)
 gaming = Category.create!(name: "Gaming", slug: "gaming", parent_id: laptops.id)
 phones = Category.create!(name: "Phones", slug: "phones", parent_id: electronics.id)
+sport = Category.create!(name: "Sport", slug: "sports")
 
-categories = [electronics, laptops, gaming, phones]
+categories = [electronics, laptops, gaming, phones, sport]
 
 # Helper to insert closure rows
 def insert_closure(ancestor, descendant, depth)
@@ -129,10 +130,11 @@ end
 # ---- Products with Images (15) ----
 products = 15.times.map do |i|
   product = Product.create!(
-    name: "Product #{i + 1}",
+    name: Faker::Book.title,
     slug: "product-#{i + 1}",
     description: "This is the description for product #{i + 1}",
-    brand: %w[Nike Sony Apple Samsung Adidas].sample
+    brand: %w[Nike Sony Apple Samsung Adidas].sample,
+    total_sold: rand(0..1000)
   )
 
   # Create 3 images per product

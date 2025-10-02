@@ -39,6 +39,9 @@ Rails.application.routes.draw do
       resources :orders, only: [:index, :update]
       get "categories/search/list", to: 'categories#search'
     end
+    namespace :client do
+      resources :home, only: :index
+    end
   end
   post "api/payment/stripe", to: "api/payment#stripe"
   post "api/payment/stripe/web_hook", to: "api/payment#stripe_webhook"
