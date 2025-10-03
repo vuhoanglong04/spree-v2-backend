@@ -21,7 +21,7 @@ class CategoryPolicy < ApplicationPolicy
   end
 
   def create?
-    current_account_user.has_permission?("category", "index")
+    current_account_user.has_permission?("category", "create")
   end
 
   def update?
@@ -33,6 +33,10 @@ class CategoryPolicy < ApplicationPolicy
   end
 
   def restore?
+    current_account_user.has_permission?("category", "restore")
+  end
+
+  def search?
     current_account_user.has_permission?("category", "restore")
   end
 end

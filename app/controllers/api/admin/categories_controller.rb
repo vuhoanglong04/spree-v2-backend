@@ -111,10 +111,10 @@ class Api::Admin::CategoriesController < Api::Admin::BaseAdminController
 
   # Only allow a list of trusted parameters through.
   def category_params
-    params.permit(:page, :per_page, :id, :name, :slug, :position, :parent_id)
+    params.permit(:page, :per_page, :id, :name, :slug, :position, :ancestry)
   end
 
   def authorize_account_user
-    authorize current_account_user
+    authorize current_account_user, policy_class: CategoryPolicy
   end
 end

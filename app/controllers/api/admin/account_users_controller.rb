@@ -100,6 +100,6 @@ class Api::Admin::AccountUsersController < Api::Admin::BaseAdminController
   end
 
   def authorize_account_user
-    authorize current_account_user
+    authorize current_account_user, policy_class: AccountUserPolicy
   end
 end

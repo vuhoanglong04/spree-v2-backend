@@ -21,7 +21,7 @@ class PromotionPolicy < ApplicationPolicy
   end
 
   def create?
-    current_account_user.has_permission?("promotion", "index")
+    current_account_user.has_permission?("promotion", "create")
   end
 
   def update?

@@ -108,5 +108,7 @@ gem 'kaminari'
 
 gem 'file_validators'
 
+gem 'ancestry'
+
 
 

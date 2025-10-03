@@ -137,6 +137,6 @@ class Api::Admin::ProductsController < Api::Admin::BaseAdminController
   end
 
   def authorize_account_user
-    authorize current_account_user
+    authorize current_account_user, policy_class: ProductPolicy
   end
 end

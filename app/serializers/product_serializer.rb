@@ -12,5 +12,5 @@ class ProductSerializer < ActiveModel::Serializer
              :updated_at
   has_many :categories
   has_many :product_images
-  has_many :product_variants
+  has_many :product_variants, serializer: ProductVariantSerializer
 end

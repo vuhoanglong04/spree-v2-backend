@@ -6,7 +6,7 @@ puts "Seeding database..."
 # Clear existing data
 [
   AccountUser, UserProfile, Role, Permission, UserRole, RolePermission,
-  Category, CategoryClosure, Product, ProductImage, ProductVariant,
+  Category, Product, ProductImage, ProductVariant,
   ProductAttribute, AttributeValue, ProductVariantAttrValue,
   Cart, CartItem,
   Order, OrderItem, Payment, Refund, ReturnRequest,
@@ -63,6 +63,11 @@ permissions = subjects.flat_map do |subject|
     )
   end
 end
+permissions << Permission.create!(
+  action_name: "search",
+  subject: "category",
+  description: "search category permission"
+)
 
 # Assign permissions to roles (default: 1 each just for demo)
 roles.each_with_index do |role, i|
@@ -95,42 +100,17 @@ end
 # ---- Categories (5) ----
 
 # Create categories with slug
+Category.destroy_all
 electronics = Category.create!(name: "Electronics", slug: "electronics")
-laptops = Category.create!(name: "Laptops", slug: "laptops", parent_id: electronics.id)
-gaming = Category.create!(name: "Gaming", slug: "gaming", parent_id: laptops.id)
-phones = Category.create!(name: "Phones", slug: "phones", parent_id: electronics.id)
-sport = Category.create!(name: "Sport", slug: "sports")
-
+laptops     = electronics.children.create!(name: "Laptops", slug: "laptops")
+gaming      = laptops.children.create!(name: "Gaming", slug: "gaming")
+phones      = electronics.children.create!(name: "Phones", slug: "phones")
+sport = Category.create!(name: "Sport", slug: "sport")
 categories = [electronics, laptops, gaming, phones, sport]
-
-# Helper to insert closure rows
-def insert_closure(ancestor, descendant, depth)
-  CategoryClosure.create!(
-    ancestor: ancestor.id,
-    descendant: descendant.id,
-    depth: depth
-  )
-end
-
-# Build closure table
-categories.each do |category|
-  # Self link
-  insert_closure(category, category, 0)
-
-  # Walk up parents
-  parent = category.parent_id.present? ? Category.find(category.parent_id) : nil
-  depth = 1
-  while parent
-    insert_closure(parent, category, depth)
-    parent = parent.parent_id.present? ? Category.find(parent.parent_id) : nil
-    depth += 1
-  end
-end
 # ---- Products (15) ----
-# ---- Products with Images (15) ----
 products = 15.times.map do |i|
   product = Product.create!(
-    name: Faker::Book.title,
+    name: Faker::Book.title + rand(0...100).to_s,
     slug: "product-#{i + 1}",
     description: "This is the description for product #{i + 1}",
     brand: %w[Nike Sony Apple Samsung Adidas].sample,

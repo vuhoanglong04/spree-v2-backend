@@ -65,6 +65,6 @@ class Api::Admin::OrdersController < Api::Admin::BaseAdminController
   end
 
   def authorize_account_user
-    authorize current_account_user
+    authorize current_account_user,  policy_class: OrderPolicy
   end
 end

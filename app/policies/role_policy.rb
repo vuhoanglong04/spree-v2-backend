@@ -21,7 +21,7 @@ class RolePolicy < ApplicationPolicy
   end
 
   def create?
-    current_account_user.has_permission?("role", "index")
+    current_account_user.has_permission?("role", "create")
   end
 
   def update?

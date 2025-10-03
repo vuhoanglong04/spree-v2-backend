@@ -41,6 +41,8 @@ Rails.application.routes.draw do
     end
     namespace :client do
       resources :home, only: :index
+      resources :categories, only: :index
+      resources :products, only: [:index, :show]
     end
   end
   post "api/payment/stripe", to: "api/payment#stripe"

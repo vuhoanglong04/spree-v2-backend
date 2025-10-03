@@ -21,7 +21,7 @@ class OrderPolicy < ApplicationPolicy
   end
 
   def create?
-    current_account_user.has_permission?("order", "index")
+    current_account_user.has_permission?("order", "create")
   end
 
   def update?

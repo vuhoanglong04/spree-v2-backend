@@ -1,4 +1,4 @@
-class AttributePolicy < ApplicationPolicy
+class ProductAttributePolicy < ApplicationPolicy
   # NOTE: Up to Pundit v2.3.1, the inheritance was declared as
   # `Scope < Scope` rather than `Scope < ApplicationPolicy::Scope`.
   # In most cases the behavior will be identical, but if updating existing
@@ -21,7 +21,7 @@ class AttributePolicy < ApplicationPolicy
   end
 
   def create?
-    current_account_user.has_permission?("attribute", "index")
+    current_account_user.has_permission?("attribute", "create")
   end
 
   def update?

@@ -21,7 +21,7 @@ class ProductPolicy < ApplicationPolicy
   end
 
   def create?
-    current_account_user.has_permission?("product", "index")
+    current_account_user.has_permission?("product", "create")
   end
 
   def update?

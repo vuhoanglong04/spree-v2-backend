@@ -12,13 +12,13 @@ class ProductVariantForm
             presence: true
   validates :origin_price,
             numericality: {
-              greater_than: 0,
+              greater_or_equal_to: 0,
               less_than_or_equal_to: 99_999_999.99,
               message: "Product variant's origin price is not valid"
             }
   validates :price,
             numericality: {
-              greater_than: 0,
+              greater_or_equal_to: 0,
               less_than_or_equal_to: 99_999_999.99,
               message: "Product variant's price is not valid"
             }
