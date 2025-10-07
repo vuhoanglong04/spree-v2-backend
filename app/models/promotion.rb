@@ -39,6 +39,8 @@ class Promotion < ApplicationRecord
   validates :start_date, :end_date, presence: true
   validate :end_date_after_start_date
 
+  after_commit :sync_to_stripe_async, on: %i[create update]
+
   private
 
   def end_date_after_start_date
@@ -47,5 +49,9 @@ class Promotion < ApplicationRecord
     if end_date < start_date
       errors.add(:end_date, "must be after the start date")
     end
+  end
+
+  def sync_to_stripe_async
+    SyncStripePromotionJob.perform_later(id)
   end
 end

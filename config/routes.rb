@@ -43,6 +43,12 @@ Rails.application.routes.draw do
       resources :home, only: :index
       resources :categories, only: :index
       resources :products, only: [:index, :show]
+      resources :cart, only: [:index, :create, :destroy]
+      resources :orders, only: [:index, :create, :update]
+      get "user_profiles", to: "user_profiles#show"
+      patch "user_profiles", to: "user_profiles#update"
+      get "promotions", to: "promotions#show"
+      patch "cart", to: "cart#update"
     end
   end
   post "api/payment/stripe", to: "api/payment#stripe"

@@ -9,6 +9,10 @@ class ProductVariant < ApplicationRecord
   # Other
   acts_as_paranoid
 
+  # Validations
+  validates :name, uniqueness: { case_sensitive: true }, presence: true
+  validates :sku, uniqueness: { case_sensitive: true }, presence: true
+
   private
 
   def create_stripe_product

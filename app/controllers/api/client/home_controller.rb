@@ -1,4 +1,5 @@
 class Api::Client::HomeController < Api::Client::BaseClientController
+  skip_before_action :authenticate_account_user!
   def index
     top_five_categories = Category
                             .joins(:product_categories) # join qua bảng trung gian

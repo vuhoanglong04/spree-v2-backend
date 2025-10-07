@@ -10,6 +10,10 @@ module ExceptionHandler
       render_response(message: "Validation failed", errors: e.record.errors.full_messages, status: 401)
     end
 
+    rescue_from ActiveRecord::RecordNotFound do |e|
+      render_response(message: "Record not found", errors: [e.message], status: 404)
+    end
+
     rescue_from Pundit::NotAuthorizedError do |e|
       render_response(message: "You are not permitted", status: 401)
     end

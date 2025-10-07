@@ -1,4 +1,5 @@
 class Api::Client::ProductsController < Api::Client::BaseClientController
+  skip_before_action :authenticate_account_user!
   def index
     page = params[:page] ||= 1
     per_page = params[:per_page] ||= 5
@@ -13,7 +14,7 @@ class Api::Client::ProductsController < Api::Client::BaseClientController
   end
 
   def show
-    product = Product.without_deleted.find_by!(id: params[:id])
+    product = Product.without_deleted.find_by!(slug: params[:id])
     render_response(
       data: {
         product: ActiveModelSerializers::SerializableResource.new(product, serializer: ProductSerializer)

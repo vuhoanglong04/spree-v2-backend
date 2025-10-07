@@ -8,6 +8,7 @@ class PromotionSerializer < ActiveModel::Serializer
              :min_order_amount,
              :description,
              :per_user_limit,
+             :stripe_coupon_id,
              :start_date,
              :end_date,
              :deleted_at,

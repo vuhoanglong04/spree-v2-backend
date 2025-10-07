@@ -28,6 +28,7 @@ class AccountUser < ApplicationRecord
   has_many :permissions, through: :role_permissions
   has_one :cart, dependent: :destroy
   has_many :cart_items, through: :cart
+  has_many :orders
   accepts_nested_attributes_for :user_profile
 
   def has_permission?(subject, action)

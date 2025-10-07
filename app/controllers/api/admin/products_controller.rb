@@ -60,13 +60,14 @@ class Api::Admin::ProductsController < Api::Admin::BaseAdminController
 
   # PATCH/PUT /products/1 or /products/1.json
   def update
-    product = Product.with_deleted.find_by!(id: params[:id])
     UpdateProductForm.new(update_product_params)
+    product = Product.with_deleted.find_by!(id: params[:id])
     new_params = update_product_params.to_h.deep_dup
 
     ActiveRecord::Base.transaction do
       # Delete old categories
       ProductCategory.where(product_id: params[:id]).destroy_all
+      #Add new product images
       if new_params[:product_images_attributes].present?
         new_params[:product_images_attributes].each do |_idx, img|
           if img[:file].present?
@@ -132,7 +133,7 @@ class Api::Admin::ProductsController < Api::Admin::BaseAdminController
       :favourite_count,
       product_categories_attributes: [:id, :category_id, :_destroy],
       product_images_attributes: [:id, :file, :alt, :position, :url, :_destroy],
-      product_variants_attributes: [:id, :sku, :origin_price, :price, :stock_qty, :_destroy]
+      product_variants_attributes: [:id, :sku, :name, :origin_price, :price, :stock_qty, :_destroy]
     )
   end
 

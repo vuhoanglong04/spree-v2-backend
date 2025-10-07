@@ -1,4 +1,5 @@
 class Api::Client::BaseClientController < ActionController::API
+  before_action :authenticate_account_user!
   include ExceptionHandler
   include ResponseHandler
   include PaginateHandler

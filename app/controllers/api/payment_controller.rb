@@ -1,7 +1,10 @@
-class Api::PaymentController < Api::BaseController
+class Api::PaymentController < ApplicationController
+  include ResponseHandler
+  skip_before_action :verify_authenticity_token
+
   def stripe
     items = []
-    order_params[:items].each do |index, item_params|
+    order_params[:items].each do |item_params|
       items << {
         price: item_params[:stripe_price_id],
         quantity: item_params[:quantity]
@@ -9,9 +12,12 @@ class Api::PaymentController < Api::BaseController
     end
 
     session = Stripe::Checkout::Session.create(
-      payment_method_types: ['card'],
+      payment_method_types: ["card"],
       line_items: items,
-      mode: 'payment',
+      mode: "payment",
+      discounts: [
+        { coupon: order_params[:stripe_coupon_id] }
+      ],
       success_url: "http://localhost:5173/payment/success",
       cancel_url: "http://localhost:5173/payment/error",
       payment_intent_data: {
@@ -25,8 +31,8 @@ class Api::PaymentController < Api::BaseController
 
   def stripe_webhook
     payload = request.body.read
-    sig_header = request.env['HTTP_STRIPE_SIGNATURE']
-    endpoint_secret = ENV['STRIPE_WEBHOOK_SECRET']
+    sig_header = request.env["HTTP_STRIPE_SIGNATURE"]
+    endpoint_secret = ENV["STRIPE_WEBHOOK_SECRET"]
 
     begin
       event = Stripe::Webhook.construct_event(payload, sig_header, endpoint_secret)
@@ -37,7 +43,7 @@ class Api::PaymentController < Api::BaseController
     end
 
     case event.type
-    when 'charge.succeeded'
+    when "charge.succeeded"
       session = event.data.object
       handle_checkout_session(session)
     else
@@ -52,6 +58,7 @@ class Api::PaymentController < Api::BaseController
   def order_params
     params.permit(
       :order_id,
+      :stripe_coupon_id,
       items: [
         :stripe_price_id,
         :quantity
