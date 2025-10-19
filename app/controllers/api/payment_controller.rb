@@ -10,20 +10,35 @@ class Api::PaymentController < ApplicationController
         quantity: item_params[:quantity]
       }
     end
+    handle_payment_stripe(params[:order_id], items, order&.promotion&.stripe_coupon_id)
+  end
 
+  def repaid_stripe
+    order = Order.find_by!(id: params[:id])
+    items = []
+    order.order_items.each do |order_item|
+      items << {
+        price: order_item&.product_variant&.stripe_price_id,
+        quantity: order_item[:quantity]
+      }
+    end
+    handle_payment_stripe(params[:id], items, order&.promotion&.stripe_coupon_id)
+  end
+
+  def handle_payment_stripe(order_id, items, stripe_coupon_id)
     session = Stripe::Checkout::Session.create(
       payment_method_types: ["card"],
       line_items: items,
       mode: "payment",
-      discounts: [
-        { coupon: order_params[:stripe_coupon_id] }
-      ],
       success_url: "http://localhost:5173/payment/success",
       cancel_url: "http://localhost:5173/payment/error",
       payment_intent_data: {
-        metadata: { order_id: order_params[:order_id] }
+        metadata: { order_id: order_id }
       },
     )
+    if stripe_coupon_id.present?
+      session_params[:discounts] = [{ coupon: stripe_coupon_id }]
+    end
     render_response(message: "Create payment link successfully", status: 200, data: session.url)
   rescue Stripe::StripeError => e
     render_response(status: :unprocessable_entity, message: e.message)

@@ -2,7 +2,7 @@ class Api::Client::OrdersController < Api::Client::BaseClientController
   def index
     page = params[:page] ||= 1
     per_page = params[:per_page] ||= 5
-    orders = Order.where(account_user_id: params[:account_user_id]).page(page).per(per_page)
+    orders = Order.order("created_at desc").where(account_user_id: params[:account_user_id]).page(page).per(per_page)
     render_response(
       data: {
         orders: ActiveModelSerializers::SerializableResource.new(orders)
@@ -19,16 +19,18 @@ class Api::Client::OrdersController < Api::Client::BaseClientController
 
     ActiveRecord::Base.transaction do
       order.save!
-
+      AutoCancelUnpaidOrderJob.set(wait: 30.minutes).perform_later(order.id)
       order_params[:order_items].each do |item|
+        variant = ProductVariant.find_by!(id: item[:product_variant_id])
         order.order_items.create!(
           product_variant_id: item[:product_variant_id],
-          name: item[:name],
-          sku: item[:sku],
+          name: variant&.name,
+          sku: variant&.sku,
           quantity: item[:quantity],
-          unit_price: item[:unit_price]
+          unit_price: variant&.price
         )
       end
+
     end
 
     render_response(
@@ -70,7 +72,7 @@ class Api::Client::OrdersController < Api::Client::BaseClientController
       :first_name,
       :last_name,
       :phone_number,
-      order_items: [:product_variant_id, :name, :sku, :quantity, :unit_price]
+      order_items: [:product_variant_id, :quantity, :unit_price]
     )
   end
 end

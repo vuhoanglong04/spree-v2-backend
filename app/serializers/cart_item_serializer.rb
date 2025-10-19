@@ -1,6 +1,7 @@
 class CartItemSerializer < ActiveModel::Serializer
   attributes :id,
              :product_variant_name,
+             :product_variant_sku,
              :product_variant_image,
              :product_variant_price,
              :product_variant_id,
@@ -12,6 +13,9 @@ class CartItemSerializer < ActiveModel::Serializer
   end
   def product_variant_name
     object&.product_variant&.name
+  end
+  def product_variant_sku
+    object&.product_variant&.sku
   end
 
   def product_variant_price
