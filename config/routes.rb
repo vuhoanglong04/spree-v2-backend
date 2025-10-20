@@ -45,6 +45,7 @@ Rails.application.routes.draw do
       resources :products, only: [:index, :show]
       resources :cart, only: [:index, :create, :destroy]
       resources :orders, only: [:index, :create, :update]
+      resources :product_attributes, only: [:index]
       get "user_profiles", to: "user_profiles#show"
       patch "user_profiles", to: "user_profiles#update"
       get "promotions", to: "promotions#show"
