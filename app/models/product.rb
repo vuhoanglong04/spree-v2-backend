@@ -49,6 +49,7 @@ class Product < ApplicationRecord
       description: description,
       total_sold: total_sold,
       favourite_count: favourite_count,
+      created_at: created_at,
       product_variants: product_variants.map do |variant|
         {
           sku: variant.sku,

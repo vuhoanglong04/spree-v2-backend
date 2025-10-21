@@ -155,7 +155,7 @@ class Api::Client::ProductsController < Api::Client::BaseClientController
     render_response(
       data: {
         product: ActiveModelSerializers::SerializableResource.new(product, serializer: ProductSerializer),
-        related_products: related_products ? ActiveModelSerializers::SerializableResource.new(related_products, serializer: ProductSerializer) : nil
+        related_products: related_products.present? ? ActiveModelSerializers::SerializableResource.new(related_products, serializer: ProductSerializer) : nil
       },
       message: "Get product successfully!",
       status: 200

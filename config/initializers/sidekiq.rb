@@ -1,5 +1,5 @@
 Sidekiq.configure_server do |config|
-  config.redis = { url: 'redis://localhost:6379/1' }
+  config.redis = { url: ENV["REDIS_URL"] }
   Sidekiq::Cron::Job.create(
     name: 'Sync Product Variants With Stripe',
     cron: '0 0 /3 * *',
@@ -9,5 +9,5 @@ Sidekiq.configure_server do |config|
 end
 
 Sidekiq.configure_client do |config|
-  config.redis = { url: 'redis://localhost:6379/1' }
+  config.redis = { url: ENV["REDIS_URL"]  }
 end
