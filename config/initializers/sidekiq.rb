@@ -1,3 +1,4 @@
+if defined?(Sidekiq)
 Sidekiq.configure_server do |config|
   config.redis = { url: ENV["REDIS_URL"] }
   Sidekiq::Cron::Job.create(
@@ -10,4 +11,5 @@ end
 
 Sidekiq.configure_client do |config|
   config.redis = { url: ENV["REDIS_URL"]  }
+end
 end

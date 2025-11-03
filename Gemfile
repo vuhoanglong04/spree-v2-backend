@@ -54,61 +54,65 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  gem "paranoia"
+
+  gem "devise", "~> 4.9"
+
+  gem "devise-jwt"
+
+  gem "faker", "~> 3.5"
+
+  gem "aws-sdk-s3", "~> 1.194"
+
+  gem "prism", "~> 1.4"
+
+  gem "pundit", "~> 2.5"
+
+  gem "dotenv-rails"
+
+  gem "stripe"
+
+  gem "stripe_event"
+
+  gem "rack-cors", require: "rack/cors"
+
+  gem "sidekiq"
+
+  gem "sidekiq-cron"
+
+  gem "redis"
+
+  gem "elasticsearch-model"
+
+  gem "elasticsearch-rails"
+
+  gem "omniauth"
+
+  gem "omniauth-google-oauth2"
+
+  gem "omniauth-rails_csrf_protection"
+
+  gem "pg"
+
+  gem "active_model_serializers"
+
+  gem "kaminari"
+
+  gem "file_validators"
+
+  gem "ancestry"
+
+  gem "rspec-rails"
+  
+  gem "factory_bot_rails"
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "pg"
 end
-
-gem "paranoia"
-
-gem "devise", "~> 4.9"
-
-gem "devise-jwt"
-
-gem "faker", "~> 3.5"
-
-gem "aws-sdk-s3", "~> 1.194"
-
-gem "prism", "~> 1.4"
-
-gem 'pundit', '~> 2.5'
-
-gem 'dotenv-rails'
-
-gem 'stripe'
-
-gem 'stripe_event'
-
-gem 'rack-cors', require: 'rack/cors'
-
-gem 'sidekiq'
-
-gem 'sidekiq-cron'
-
-gem 'redis'
-
-gem 'elasticsearch-model'
-
-gem 'elasticsearch-rails'
-
-gem 'omniauth'
-
-gem 'omniauth-google-oauth2'
-
-gem 'omniauth-rails_csrf_protection'
-
-gem 'pg'
-
-gem 'active_model_serializers'
-
-gem 'kaminari'
-
-gem 'file_validators'
-
-gem 'ancestry'
-
 
 

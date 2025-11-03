@@ -24,7 +24,9 @@ module SpreeV2Backend
     # config.time_zone = "Central Time (US & Canada)"
     config.eager_load_paths << Rails.root.join("exceptions")
 
-    config.middleware.insert_before Warden::Manager, JwtErrorHandler
+    if defined?(Warden::Manager)
+      config.middleware.insert_before Warden::Manager, JwtErrorHandler
+    end
 
     config.active_job.queue_adapter = :sidekiq
   end
