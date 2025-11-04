@@ -56,13 +56,6 @@ Rails.application.routes.draw do
   post "api/payment/repaid_stripe", to: "api/payment#repaid_stripe"
   post "api/payment/stripe/web_hook", to: "api/payment#stripe_webhook"
   get "api/admin/me", to: "api/admin/base_admin#me"
-  devise_for :account_users, path: "api/auth", controllers: {
-    sessions: 'api/auth/sessions',
-    registrations: 'api/auth/registrations',
-    confirmations: 'api/auth/confirmations',
-    passwords: 'api/auth/passwords',
-    omniauth_callbacks: 'api/auth/omniauth_callbacks'
-  }
   devise_scope :account_user do
     namespace :api do
       namespace :auth do
