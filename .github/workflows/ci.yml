@@ -11,28 +11,24 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAILS_ENV: test
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+  
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2"
           bundler-cache: true
-
-      - name: Install SQLite3
-        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
-
-      - name: Prepare database
+  
+      - name: Prepare test database
         run: |
           bin/rails db:drop || true
           bin/rails db:create
-          bin/rails db:schema:load
-
+          bin/rails db:migrate
+  
       - name: Run RSpec tests
-        run: bundle exec rspec --format documentation
+        run: bundle exec rspec
+
 
   lint:
     runs-on: ubuntu-latest
