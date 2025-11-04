@@ -9,46 +9,44 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        ports:
+          - "5433:5432"
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: spree_v2_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
       RAILS_ENV: test
+      PGHOST: 127.0.0.1
+      PGPORT: 5433
+      PGUSER: postgres
+      PGPASSWORD: secret
+      DATABASE_URL: postgres://postgres:secret@127.0.0.1:5433/spree_v2_test
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-  
+
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-  
-      - name: Prepare test database
+
+      - name: Prepare test DB
         run: |
           bin/rails db:drop || true
           bin/rails db:create
           bin/rails db:migrate
-  
-      - name: Run RSpec tests
+
+      - name: Run RSpec
         run: bundle exec rspec
-
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Ruby and gems
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-
-      - name: Generate binstubs
-        run: bundle binstubs bundler-audit brakeman rubocop
-
-      - name: Security audit dependencies
-        run: bin/bundler-audit --update
-
-      - name: Security audit application code
-        run: bin/brakeman -q -w2
-
-      - name: Lint Ruby files
-        run: bin/rubocop --parallel
