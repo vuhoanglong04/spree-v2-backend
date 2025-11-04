@@ -1,7 +1,7 @@
 class Product < ApplicationRecord
   include RemoveCacheAfterCommitting
   include Elasticsearch::Model
-  include Elasticsearch::Model::Callbacks
+  include Elasticsearch::Model::Callbacks unless Rails.env.test?
   acts_as_paranoid
   has_many :product_images, -> { order(position: :asc) }, dependent: :destroy
   has_many :product_variants, -> { order(updated_at: :desc) }
