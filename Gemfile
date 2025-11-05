@@ -72,7 +72,7 @@ gem "paranoia"
 
 gem "faker", "~> 3.5"
 
-gem "aws-sdk-s3", "~> 1.194"
+gem "aws-sdk-s3", "~> 1.202"
 
 gem "prism", "~> 1.4"
 
