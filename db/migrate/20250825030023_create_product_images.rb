@@ -1,7 +1,7 @@
 class CreateProductImages < ActiveRecord::Migration[8.0]
   def change
-    create_table :product_images, id: :uuid do |t|
-      t.uuid :product_id, null: false
+    create_table :product_images do |t|
+      t.references :product, null: false, foreign_key: true
       t.text :url, null: false
       t.string :alt, default: "product"
       t.integer :position
