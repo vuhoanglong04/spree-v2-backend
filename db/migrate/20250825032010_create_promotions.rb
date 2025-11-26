@@ -1,6 +1,6 @@
 class CreatePromotions < ActiveRecord::Migration[8.0]
   def change
-    create_table :promotions, id: :uuid do |t|
+    create_table :promotions do |t|
       t.string :code, null: false
       t.text :description
       t.integer :promotion_type, default: 0, null: false # fixed : 0, percentage : 1

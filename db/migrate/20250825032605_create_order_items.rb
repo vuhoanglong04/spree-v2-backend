@@ -1,8 +1,8 @@
 class CreateOrderItems < ActiveRecord::Migration[8.0]
   def change
-    create_table :order_items, id: :uuid do |t|
-      t.uuid :order_id, null: false
-      t.uuid :product_variant_id, null: false
+    create_table :order_items do |t|
+      t.references :order, null: false, foreign_key: true
+      t.references :product_variant, null: false, foreign_key: true
       t.string :name, null: false
       t.string :sku, null: false
       t.integer :quantity, null: false
@@ -10,6 +10,5 @@ class CreateOrderItems < ActiveRecord::Migration[8.0]
       t.text :product_variant_snapshot
       t.timestamps
     end
-    add_index :order_items, :order_id, unique: true
   end
 end

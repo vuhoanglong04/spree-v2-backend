@@ -63,7 +63,7 @@ services:
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: spree_v2_development
     ports:
-      - "5433:5432"
+      - "6001:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
