@@ -1,32 +1,33 @@
-# Base image chứa Ruby
-FROM ruby:3.2.2
+FROM ruby:3.2.2-slim
 
-# Cài đặt các gói cần thiết cho Rails, PostgreSQL, NodeJS, Yarn
-RUN apt-get update -qq && apt-get install -y \
-  build-essential \
-  libpq-dev \
-  nodejs \
-  yarn \
-  git \
-  vim \
-  curl
+# Install system dependencies
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+      build-essential \
+      libpq-dev \
+      libvips \
+      nodejs \
+      postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# Thiết lập thư mục làm việc trong container
 WORKDIR /app
 
-# Copy Gemfile và Gemfile.lock vào container trước để cache bundle install
+# Install gems
 COPY Gemfile Gemfile.lock ./
+RUN gem install bundler && bundle install
 
-# Cài đặt gem (bỏ development/test nếu build cho production)
-RUN bundle install
-
-# Copy toàn bộ mã nguồn vào container
+# Copy application code
 COPY . .
-# Precompile assets (nếu có frontend như sprockets hoặc webpacker)
-# RUN bundle exec rake assets:precompile
 
-# Expose port mặc định của Rails
+# Ensure entrypoint is executable
+RUN chmod +x bin/docker-entrypoint
+
+# Precompile assets (safe to skip if not using assets)
+RUN bundle exec rails assets:precompile || true
+
+# Expose port for the Rails server
 EXPOSE 3000
 
-# Command để khởi động server
-CMD ["bash", "-c", "bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0 -p 3000"]
+# Use entrypoint to run db:prepare automatically when starting server
+ENTRYPOINT ["./bin/docker-entrypoint"]
+CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "3000"]

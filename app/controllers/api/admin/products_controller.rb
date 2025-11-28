@@ -67,7 +67,7 @@ class Api::Admin::ProductsController < Api::Admin::BaseAdminController
     ActiveRecord::Base.transaction do
       # Delete old categories
       ProductCategory.where(product_id: params[:id]).destroy_all
-      #Add new product images
+      # Add new product images
       if new_params[:product_images_attributes].present?
         new_params[:product_images_attributes].each do |_idx, img|
           if img[:file].present?
@@ -118,9 +118,9 @@ class Api::Admin::ProductsController < Api::Admin::BaseAdminController
       :description,
       :brand,
       :favourite_count,
-      product_images_attributes: [:file, :alt, :position],
-      product_categories_attributes: [:category_id],
-      product_variants_attributes: [:id, :sku, :origin_price, :price, :stock_qty]
+      product_images_attributes: [ :file, :alt, :position ],
+      product_categories_attributes: [ :category_id ],
+      product_variants_attributes: [ :id, :sku, :origin_price, :price, :stock_qty ]
     )
   end
 
@@ -131,9 +131,9 @@ class Api::Admin::ProductsController < Api::Admin::BaseAdminController
       :description,
       :brand,
       :favourite_count,
-      product_categories_attributes: [:id, :category_id, :_destroy],
-      product_images_attributes: [:id, :file, :alt, :position, :url, :_destroy],
-      product_variants_attributes: [:id, :sku, :name, :origin_price, :price, :stock_qty, :_destroy]
+      product_categories_attributes: [ :id, :category_id, :_destroy ],
+      product_images_attributes: [ :id, :file, :alt, :position, :url, :_destroy ],
+      product_variants_attributes: [ :id, :sku, :name, :origin_price, :price, :stock_qty, :_destroy ]
     )
   end
 

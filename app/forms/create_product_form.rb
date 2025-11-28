@@ -57,5 +57,4 @@ class CreateProductForm
       end
     end
   end
-
 end

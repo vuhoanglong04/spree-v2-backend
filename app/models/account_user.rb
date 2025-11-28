@@ -7,7 +7,7 @@ class AccountUser < ApplicationRecord
          :trackable,
          :confirmable,
          :jwt_authenticatable,
-         :omniauthable, omniauth_providers: [:google_oauth2],
+         :omniauthable, omniauth_providers: [ :google_oauth2 ],
          jwt_revocation_strategy: JwtRedisDenyList
 
   enum :status, { active: 0, disabled: 1, blocked: 2 }

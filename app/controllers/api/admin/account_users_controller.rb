@@ -25,7 +25,6 @@ class Api::Admin::AccountUsersController < Api::Admin::BaseAdminController
 
   # GET /account_users/new
   def new
-
   end
 
   # GET /account_users/1/edit
@@ -96,7 +95,7 @@ class Api::Admin::AccountUsersController < Api::Admin::BaseAdminController
   def account_user_params
     params
       .permit(:email, :status, :password, :password_confirmation, :main_role,
-              user_profile_attributes: [:full_name, :phone, :avatar_url, :locale, :time_zone])
+              user_profile_attributes: [ :full_name, :phone, :avatar_url, :locale, :time_zone ])
   end
 
   def authorize_account_user

@@ -1,5 +1,4 @@
 class Api::Admin::PermissionsController < Api::Admin::BaseAdminController
-
   # GET /permissions or /permissions.json
   def index
     permissions = Permission.all

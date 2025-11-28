@@ -30,7 +30,6 @@ class Api::Admin::RolesController < Api::Admin::BaseAdminController
 
   # GET /roles/new
   def new
-
   end
 
   # GET /roles/1/edit
@@ -85,7 +84,7 @@ class Api::Admin::RolesController < Api::Admin::BaseAdminController
                   :id,
                   :name,
                   :description,
-                  role_permissions_attributes: [:permission_id, :_destroy]
+                  role_permissions_attributes: [ :permission_id, :_destroy ]
     )
   end
 

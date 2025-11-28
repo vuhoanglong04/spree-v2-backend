@@ -9,7 +9,7 @@ class CustomFailureApp < Devise::FailureApp
     http_status = 401
     response_body = {
       status: "error",
-      message: i18n_message.sub(/\A\w/) { |c| c.upcase } || "Authentication failed",
+      message: i18n_message.sub(/\A\w/) { |c| c.upcase } || "Authentication failed"
     }.compact
 
     self.status = http_status

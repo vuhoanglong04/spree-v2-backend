@@ -56,7 +56,7 @@ class CreateProductVariantForm
         errors.add(:product_variant_attr_values_attributes, form.errors.full_messages)
       end
       # Check duplicated a pair of attribute and attribute value in input data
-      pair = [item["product_attribute_id"], item["attribute_value_id"]]
+      pair = [ item["product_attribute_id"], item["attribute_value_id"] ]
       if seen_pairs.include?(pair)
         errors.add(:product_variant_attr_values_attributes, "Duplicate attributes found!")
         return

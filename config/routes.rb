@@ -36,16 +36,16 @@ Rails.application.routes.draw do
           post :restore
         end
       end
-      resources :orders, only: [:index, :update]
-      get "categories/search/list", to: 'categories#search'
+      resources :orders, only: [ :index, :update ]
+      get "categories/search/list", to: "categories#search"
     end
     namespace :client do
       resources :home, only: :index
       resources :categories, only: :index
-      resources :products, only: [:index, :show]
-      resources :cart, only: [:index, :create, :destroy]
-      resources :orders, only: [:index, :create, :update]
-      resources :product_attributes, only: [:index]
+      resources :products, only: [ :index, :show ]
+      resources :cart, only: [ :index, :create, :destroy ]
+      resources :orders, only: [ :index, :create, :update ]
+      resources :product_attributes, only: [ :index ]
       get "user_profiles", to: "user_profiles#show"
       patch "user_profiles", to: "user_profiles#update"
       get "promotions", to: "promotions#show"
@@ -57,11 +57,11 @@ Rails.application.routes.draw do
   post "api/payment/stripe/web_hook", to: "api/payment#stripe_webhook"
   get "api/admin/me", to: "api/admin/base_admin#me"
   devise_for :account_users, path: "api/auth", controllers: {
-    sessions: 'api/auth/sessions',
-    registrations: 'api/auth/registrations',
-    confirmations: 'api/auth/confirmations',
-    passwords: 'api/auth/passwords',
-    omniauth_callbacks: 'api/auth/omniauth_callbacks'
+    sessions: "api/auth/sessions",
+    registrations: "api/auth/registrations",
+    confirmations: "api/auth/confirmations",
+    passwords: "api/auth/passwords",
+    omniauth_callbacks: "api/auth/omniauth_callbacks"
   }
   devise_scope :account_user do
     namespace :api do

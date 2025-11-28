@@ -8,9 +8,9 @@ class JwtErrorHandler
     begin
       @app.call(env)
     rescue JWT::DecodeError, JWT::ExpiredSignature => e
-      return json_response("Token invalid")
+      json_response("Token invalid")
     rescue RevokedTokenError => e
-      return json_response(e.message)
+      json_response(e.message)
     end
   end
 
@@ -19,8 +19,8 @@ class JwtErrorHandler
   def json_response(message)
     [
       401,
-      { 'Content-Type' => 'application/json' },
-      [{ status: "error", message: message }.to_json]
+      { "Content-Type" => "application/json" },
+      [ { status: "error", message: message }.to_json ]
     ]
   end
 end

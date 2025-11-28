@@ -1,50 +1,69 @@
-# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+# Git
+.git
+.gitignore
+.gitattributes
 
-# Ignore git directory.
-/.git/
-/.gitignore
+# CI/CD
+.github
 
-# Ignore bundler config.
+# Documentation
+README.md
+*.md
+
+# Environment files
+.env*
+!.env.example
+
+# Development files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Test files
+spec/
+test/
+coverage/
+
+# Logs
+log/*.log
+tmp/*
+!tmp/.keep
+!tmp/pids/.keep
+!tmp/sockets/.keep
+
+# Storage
+storage/*
+!storage/.keep
+
+# Node modules (if any)
+node_modules/
+/vendor/bundle
+
+# Temporary files
+*.pid
+*.seed
+*.sqlite3
+*.sqlite3-journal
+
+# Ignore bundler config
 /.bundle
 
-# Ignore all environment files.
-/.env*
-
-# Ignore all default key files.
+# Ignore master key for decrypting credentials
 /config/master.key
-/config/credentials/*.key
 
-# Ignore all logfiles and tempfiles.
-/log/*
-/tmp/*
-!/log/.keep
-!/tmp/.keep
+# Local development databases
+db/*.sqlite3*
+db/test.sqlite3*
 
-# Ignore pidfiles, but keep the directory.
-/tmp/pids/*
-!/tmp/pids/.keep
+# Redis dump
+dump.rdb
 
-# Ignore storage (uploaded files in development and any SQLite databases).
-/storage/*
-!/storage/.keep
-/tmp/storage/*
-!/tmp/storage/.keep
+# Assets (will be precompiled in Docker)
+public/assets
+public/packs
 
-# Ignore assets.
-/node_modules/
-/app/assets/builds/*
-!/app/assets/builds/.keep
-/public/assets
-
-# Ignore CI service files.
-/.github
-
-# Ignore Kamal files.
-/config/deploy*.yml
-/.kamal
-
-# Ignore development files
-/.devcontainer
-
-# Ignore Docker-related files
-/.dockerignore
+# Other
+.DS_Store
+Thumbs.db

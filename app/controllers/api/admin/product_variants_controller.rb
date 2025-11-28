@@ -97,7 +97,7 @@ class Api::Admin::ProductVariantsController < Api::Admin::BaseAdminController
                   :origin_price,
                   :price,
                   :stock_qty,
-                  product_variant_attr_values_attributes: [:id, :product_attribute_id, :attribute_value_id, :_destroy]
+                  product_variant_attr_values_attributes: [ :id, :product_attribute_id, :attribute_value_id, :_destroy ]
     )
   end
 
