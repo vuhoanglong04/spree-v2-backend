@@ -49,7 +49,7 @@ RSpec.describe Category, type: :model do
     it 'soft deletes the category' do
       category = create(:category)
       category.destroy
-      
+
       expect(Category.find_by(id: category.id)).to be_nil
       expect(Category.with_deleted.find_by(id: category.id)).to be_present
       expect(category.deleted_at).to be_present
@@ -59,7 +59,7 @@ RSpec.describe Category, type: :model do
       category = create(:category)
       category.destroy
       category.restore
-      
+
       expect(Category.find_by(id: category.id)).to be_present
       expect(category.deleted_at).to be_nil
     end
@@ -68,7 +68,7 @@ RSpec.describe Category, type: :model do
   describe 'ancestry (tree structure)' do
     it 'allows creating a root category' do
       category = create(:category, name: "Root Category", slug: "root-category")
-      
+
       expect(category.root?).to be true
       expect(category.parent).to be_nil
     end
@@ -76,7 +76,7 @@ RSpec.describe Category, type: :model do
     it 'allows creating a child category' do
       parent = create(:category, name: "Parent", slug: "parent")
       child = create(:category, name: "Child", slug: "child", parent: parent)
-      
+
       expect(child.parent).to eq(parent)
       expect(parent.children).to include(child)
     end
@@ -85,7 +85,7 @@ RSpec.describe Category, type: :model do
       grandparent = create(:category, name: "Grandparent", slug: "grandparent")
       parent = create(:category, name: "Parent", slug: "parent", parent: grandparent)
       child = create(:category, name: "Child", slug: "child", parent: parent)
-      
+
       expect(child.ancestors).to include(parent, grandparent)
       expect(grandparent.descendants).to include(parent, child)
     end
@@ -95,8 +95,8 @@ RSpec.describe Category, type: :model do
       child1 = create(:category, name: "Child 1", slug: "child-1", parent: parent)
       child2 = create(:category, name: "Child 2", slug: "child-2", parent: parent)
       grandchild = create(:category, name: "Grandchild", slug: "grandchild", parent: child1)
-      
-      expect(parent.descendants).to match_array([child1, child2, grandchild])
+
+      expect(parent.descendants).to match_array([ child1, child2, grandchild ])
     end
   end
 
@@ -106,7 +106,7 @@ RSpec.describe Category, type: :model do
 
     it 'can have many products through product_categories' do
       product_category = create(:product_category, category: category, product: product)
-      
+
       expect(category.products).to include(product)
       expect(category.product_categories).to include(product_category)
     end
@@ -114,10 +114,10 @@ RSpec.describe Category, type: :model do
     it 'can have multiple products' do
       product1 = create(:product)
       product2 = create(:product)
-      
+
       create(:product_category, category: category, product: product1)
       create(:product_category, category: category, product: product2)
-      
+
       expect(category.products.count).to eq(2)
       expect(category.products).to include(product1, product2)
     end
@@ -131,11 +131,10 @@ RSpec.describe Category, type: :model do
 
     it 'creates a category with default attributes' do
       category = create(:category)
-      
+
       expect(category.name).to be_present
       expect(category.slug).to be_present
       expect(category.position).to eq(0)
     end
   end
 end
-

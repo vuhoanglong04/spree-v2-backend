@@ -106,7 +106,7 @@ laptops     = electronics.children.create!(name: "Laptops", slug: "laptops")
 gaming      = laptops.children.create!(name: "Gaming", slug: "gaming")
 phones      = electronics.children.create!(name: "Phones", slug: "phones")
 sport = Category.create!(name: "Sport", slug: "sport")
-categories = [electronics, laptops, gaming, phones, sport]
+categories = [ electronics, laptops, gaming, phones, sport ]
 # ---- Products (15) ----
 products = 15.times.map do |i|
   product = Product.create!(

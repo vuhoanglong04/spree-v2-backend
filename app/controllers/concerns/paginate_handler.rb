@@ -17,13 +17,13 @@ module PaginateHandler
 
   def es_pagination_meta(results, page, per_page)
     total_count =
-      if results.dig('hits', 'total').is_a?(Hash)
-        results.dig('hits', 'total', 'value')
+      if results.dig("hits", "total").is_a?(Hash)
+        results.dig("hits", "total", "value")
       else
-        results.dig('hits', 'total')
+        results.dig("hits", "total")
       end
 
-    records = results.dig('hits', 'hits') || []
+    records = results.dig("hits", "hits") || []
     total_pages = (total_count.to_f / per_page).ceil
 
     {

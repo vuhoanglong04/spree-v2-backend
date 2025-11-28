@@ -1,5 +1,4 @@
 class Api::Admin::ReturnRequestsController < Api::Admin::BaseAdminController
-
   # GET /return_requests or /return_requests.json
   def index
   end

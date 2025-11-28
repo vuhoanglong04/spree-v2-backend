@@ -43,7 +43,7 @@ class CreateOrderForm
   def validate_order_items
     if order_items.blank? || !order_items.is_a?(Array)
       errors.add(:order_items, "Order item is required")
-      return
+      nil
     end
   end
 end

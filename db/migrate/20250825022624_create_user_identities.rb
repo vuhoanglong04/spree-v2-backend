@@ -6,6 +6,6 @@ class CreateUserIdentities < ActiveRecord::Migration[8.0]
       t.string :provider_uid, null: false
       t.timestamps
     end
-    add_index :user_identities, [:provider, :provider_uid], unique: true
+    add_index :user_identities, [ :provider, :provider_uid ], unique: true
   end
 end

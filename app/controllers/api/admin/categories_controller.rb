@@ -19,9 +19,9 @@ class Api::Admin::CategoriesController < Api::Admin::BaseAdminController
     name = params[:name]
     categories = if name.present?
                    Category.with_deleted.order(:position).where("name ILIKE ?", "%#{name}%").limit(2)
-                 else
+    else
                    Category.with_deleted.order(:position).limit(2)
-                 end
+    end
 
     render_response(data: {
       categories: ActiveModelSerializers::SerializableResource.new(categories, each_serializer: CategorySerializer)

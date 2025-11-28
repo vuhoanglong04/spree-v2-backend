@@ -13,6 +13,5 @@ class Api::Client::PromotionsController < Api::Client::BaseClientController
   private
 
   def promotion_params
-
   end
 end

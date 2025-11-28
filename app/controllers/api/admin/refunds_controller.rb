@@ -1,5 +1,4 @@
 class Api::Admin::RefundsController < Api::Admin::BaseAdminController
-
   # GET /refunds or /refunds.json
   def index
   end

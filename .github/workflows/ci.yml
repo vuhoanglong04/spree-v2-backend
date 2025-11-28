@@ -1,52 +1,55 @@
-name: "Ruby on Rails CI"
+name: CI
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
-
+    branches: [ '*']
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:14
-        ports:
-          - "5433:5432"
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: secret
-          POSTGRES_DB: spree_v2_test
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=5
-
+    
     env:
       RAILS_ENV: test
-      PGHOST: 127.0.0.1
-      PGPORT: 5433
-      PGUSER: postgres
-      PGPASSWORD: secret
-      DATABASE_URL: postgres://postgres:secret@127.0.0.1:5433/spree_v2_test
-
+      DATABASE_URL: sqlite3:db/test.sqlite3
+      REDIS_URL: redis://localhost:6379/0
+      ELASTICSEARCH_URL: http://localhost:9200
+      
+    services:
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Install Ruby and gems
+      
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.3.6'
           bundler-cache: true
-
-      - name: Prepare test DB
+      
+      - name: Install dependencies
         run: |
-          bin/rails db:drop || true
-          bin/rails db:create
-          bin/rails db:migrate
+          bundle config set --local without 'development'
+          bundle install --jobs 4 --retry 3
 
-      - name: Run RSpec
-        run: bundle exec rspec
+      - name: Setup test database
+        run: |
+          bundle exec rails db:create RAILS_ENV=test
+          bundle exec rails db:migrate RAILS_ENV=test
+      
+      - name: Run Brakeman security scan
+        run: bundle exec brakeman --no-pager --no-exit-on-warn --format plain
+        continue-on-error: true
+      
+      - name: Run Rubocop
+        run: bundle exec rubocop --parallel --format progress
+        continue-on-error: true
+      
+      - name: Run RSpec tests
+        run: bundle exec rspec --format documentation --color
