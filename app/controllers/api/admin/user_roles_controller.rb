@@ -1,5 +1,4 @@
 class Api::Admin::UserRolesController < Api::Admin::BaseAdminController
-
   # GET /user_roles or /user_roles.json
   def index
   end
@@ -47,6 +46,6 @@ class Api::Admin::UserRolesController < Api::Admin::BaseAdminController
   private
 
   def user_role_params
-    params.permit(user_roles: [:id, :account_user_id, :role_id])[:user_roles]
+    params.permit(user_roles: [ :id, :account_user_id, :role_id ])[:user_roles]
   end
 end

@@ -16,12 +16,10 @@ class Api::Admin::PaymentsController < Api::Admin::BaseAdminController
 
   # POST /payments or /payments.json
   def create
-
   end
 
   # PATCH/PUT /payments/1 or /payments/1.json
   def update
-
   end
 
   # DELETE /payments/1 or /payments/1.json

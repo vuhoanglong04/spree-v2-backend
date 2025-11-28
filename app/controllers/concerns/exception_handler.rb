@@ -11,7 +11,7 @@ module ExceptionHandler
     end
 
     rescue_from ActiveRecord::RecordNotFound do |e|
-      render_response(message: "Record not found", errors: [e.message], status: 404)
+      render_response(message: "Record not found", errors: [ e.message ], status: 404)
     end
 
     rescue_from Pundit::NotAuthorizedError do |e|

@@ -8,4 +8,3 @@ FactoryBot.define do
     favourite_count { 0 }
   end
 end
-

@@ -30,7 +30,6 @@ class Api::Client::OrdersController < Api::Client::BaseClientController
           unit_price: variant&.price
         )
       end
-
     end
 
     render_response(
@@ -72,7 +71,7 @@ class Api::Client::OrdersController < Api::Client::BaseClientController
       :first_name,
       :last_name,
       :phone_number,
-      order_items: [:product_variant_id, :quantity, :unit_price]
+      order_items: [ :product_variant_id, :quantity, :unit_price ]
     )
   end
 end

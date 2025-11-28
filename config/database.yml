@@ -12,8 +12,10 @@ development:
   database: spree_v2_development
 
 test:
-  <<: *default
-  database: spree_v2_test
+  adapter: sqlite3
+  pool: <%= ENV["RAILS_MAX_THREADS"] || 5 %>
+  timeout: 5000
+  database: db/test.sqlite3
 
 production:
   primary:

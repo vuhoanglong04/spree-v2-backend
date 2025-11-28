@@ -14,15 +14,14 @@ class S3UploadService
       bucket: ENV["AWS_BUCKET"],
       key: key,
       body: file,
-      content_type: file.content_type || 'application/octet-stream',
-      acl: 'public-read'
+      content_type: file.content_type || "application/octet-stream",
+      acl: "public-read"
     )
 
     "https://#{ENV["AWS_BUCKET"]}.s3.#{ENV["AWS_REGION"]}.amazonaws.com/#{key}"
   end
 
   def self.delete_by_url(url)
-
     # Extract the key from the URL
     uri = URI.parse(url)
     key = uri.path[1..] # remove leading slash

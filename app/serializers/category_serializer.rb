@@ -13,4 +13,3 @@ class CategorySerializer < ActiveModel::Serializer
     object.products.count
   end
 end
-

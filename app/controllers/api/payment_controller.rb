@@ -27,7 +27,7 @@ class Api::PaymentController < ApplicationController
 
   def handle_payment_stripe(order_id, items, stripe_coupon_id)
     session = Stripe::Checkout::Session.create(
-      payment_method_types: ["card"],
+      payment_method_types: [ "card" ],
       line_items: items,
       mode: "payment",
       success_url: "http://localhost:5173/payment/success",
@@ -37,7 +37,7 @@ class Api::PaymentController < ApplicationController
       },
     )
     if stripe_coupon_id.present?
-      session_params[:discounts] = [{ coupon: stripe_coupon_id }]
+      session_params[:discounts] = [ { coupon: stripe_coupon_id } ]
     end
     render_response(message: "Create payment link successfully", status: 200, data: session.url)
   rescue Stripe::StripeError => e
@@ -107,7 +107,4 @@ class Api::PaymentController < ApplicationController
       Rails.logger.warn("⚠️ Order not found or payment not completed for session #{session.id}")
     end
   end
-
 end
-
-

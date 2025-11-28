@@ -14,5 +14,4 @@ class ProductVariantAttributeValuesForm
     super(attributes)
     validate!
   end
-
 end

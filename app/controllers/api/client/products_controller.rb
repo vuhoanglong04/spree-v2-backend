@@ -104,7 +104,7 @@ class Api::Client::ProductsController < Api::Client::BaseClientController
             }
           ]
         else
-          [{ created_at: { order: :desc } }]
+          [ { created_at: { order: :desc } } ]
         end
 
       # --- Elasticsearch query ---
@@ -113,7 +113,7 @@ class Api::Client::ProductsController < Api::Client::BaseClientController
         size: per_page,
         query: {
           bool: {
-            must: must_clauses.presence || [{ match_all: {} }]
+            must: must_clauses.presence || [ { match_all: {} } ]
           }
         },
         sort: sort_clause

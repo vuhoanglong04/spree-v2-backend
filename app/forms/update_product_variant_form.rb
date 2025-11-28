@@ -61,5 +61,4 @@ class UpdateProductVariantForm
   #     end
   #   end
   # end
-
 end

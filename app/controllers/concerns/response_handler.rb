@@ -25,7 +25,7 @@ module ResponseHandler
   end
 
   def default_message(code)
-    Rack::Utils::HTTP_STATUS_CODES[code] || 'Unknown Status'
+    Rack::Utils::HTTP_STATUS_CODES[code] || "Unknown Status"
   end
 
   def default_status(errors)

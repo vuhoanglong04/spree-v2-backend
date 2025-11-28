@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module BuildTreeHandler
-
   def build_tree(nodes)
     nodes.map do |node, children|
       {

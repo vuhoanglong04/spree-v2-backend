@@ -17,8 +17,8 @@ class Api::Auth::OmniauthCallbacksController < Devise::OmniauthCallbacksControll
   def get_google_oauth2_url
     strategy = OmniAuth::Strategies::GoogleOauth2.new(
       nil,
-      ENV['GOOGLE_CLIENT_ID'],
-      ENV['GOOGLE_CLIENT_SECRET'],
+      ENV["GOOGLE_CLIENT_ID"],
+      ENV["GOOGLE_CLIENT_SECRET"],
       {
         redirect_uri: ENV["GOOGLE_BACKEND_CALLBACK_URL"],
         scope: "email,profile"
@@ -27,8 +27,8 @@ class Api::Auth::OmniauthCallbacksController < Devise::OmniauthCallbacksControll
 
     # Build URL login
     login_url = strategy.client.auth_code.authorize_url(
-      redirect_uri: ENV['GOOGLE_BACKEND_CALLBACK_URL'],
-      scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+      redirect_uri: ENV["GOOGLE_BACKEND_CALLBACK_URL"],
+      scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
       response_type: "code",
       access_type: "offline",
       prompt: "consent"
@@ -42,14 +42,14 @@ class Api::Auth::OmniauthCallbacksController < Devise::OmniauthCallbacksControll
   def callback
     code = params[:code]
     client = OAuth2::Client.new(
-      ENV['GOOGLE_CLIENT_ID'],
-      ENV['GOOGLE_CLIENT_SECRET'],
-      site: 'https://accounts.google.com',
-      token_url: '/o/oauth2/token',
-      authorize_url: '/o/oauth2/auth'
+      ENV["GOOGLE_CLIENT_ID"],
+      ENV["GOOGLE_CLIENT_SECRET"],
+      site: "https://accounts.google.com",
+      token_url: "/o/oauth2/token",
+      authorize_url: "/o/oauth2/auth"
     )
-    token = client.auth_code.get_token(code, redirect_uri: ENV['GOOGLE_BACKEND_CALLBACK_URL'])
-    response = token.get('https://www.googleapis.com/oauth2/v2/userinfo')
+    token = client.auth_code.get_token(code, redirect_uri: ENV["GOOGLE_BACKEND_CALLBACK_URL"])
+    response = token.get("https://www.googleapis.com/oauth2/v2/userinfo")
     account_infor = JSON.parse(response.body)
     raise ValidationError, "Some thing went wrong. Please try again later!" if account_infor.nil?
     user = AccountUser.find_or_initialize_by(email: account_infor["email"])
@@ -78,5 +78,4 @@ class Api::Auth::OmniauthCallbacksController < Devise::OmniauthCallbacksControll
   # def after_omniauth_failure_path_for(scope)
   #   super(scope)
   # end
-
 end

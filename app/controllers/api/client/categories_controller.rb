@@ -11,5 +11,4 @@ class Api::Client::CategoriesController < Api::Client::BaseClientController
       status: 200
     )
   end
-
 end

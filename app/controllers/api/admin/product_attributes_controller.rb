@@ -24,7 +24,7 @@ class Api::Admin::ProductAttributesController < Api::Admin::BaseAdminController
     attribute = ProductAttribute.with_deleted.find_by!(id: params[:id])
     render_response(
       data: {
-        attributes: ActiveModelSerializers::SerializableResource.new(attribute, serializer: ProductAttributeSerializer),
+        attributes: ActiveModelSerializers::SerializableResource.new(attribute, serializer: ProductAttributeSerializer)
       },
       message: "Get attribute successfully",
       status: 200
@@ -94,7 +94,7 @@ class Api::Admin::ProductAttributesController < Api::Admin::BaseAdminController
                   :name,
                   :slug,
                   :description,
-                  attribute_values_attributes: [:id, :value, :extra, :_destroy]
+                  attribute_values_attributes: [ :id, :value, :extra, :_destroy ]
     )
   end
 
