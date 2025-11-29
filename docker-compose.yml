@@ -27,16 +27,16 @@ services:
       DATABASE_URL: postgres://postgres:secret@db:5432/spree_v2_development
       REDIS_URL: redis://redis:6379/0
       ELASTICSEARCH_URL: http://elasticsearch:9200
-      SECRET_KEY_BASE: 515811e5dc8f9ced57b930c3b6351483a83a63b51830863601c5a4f44850ab2d961917bdc689acea1bb79b78ec67eed838b138c89026e8f1f279347ce16a98a1
+      SECRET_KEY_BASE:
       GMAIL_APP_PASSWORD: kbkw whpi wzdm lfhx
       GMAIL_USERNAME: longprovip2508@gmail.com
       AWS_ACCESS_KEY_ID:
       AWS_SECRET_ACCESS_KEY:
       AWS_BUCKET:
       AWS_REGION: ap-southeast-2
-      STRIPE_WEBHOOK_SECRET: whsec_33a0f2920308abd6385fb17c09468ee17df15a8bfae21634e982a91d0fa3d117
-      STRIPE_PUBLISHABLE_KEY: pk_test_51S3qvy0i5JbSc9y5ne7KVBKrTcbKrcBWjXfJFOnGhBhZQmloLtbkxT1qv3z2DqPufFORnm6Z9UmmfSYoj1IuGPrD00LS9UKz2A
-      STRIPE_SECRET_KEY: sk_test_51S3qvy0i5JbSc9y5wAEyCn7wOv8rUtEnScgVho0qA9iQlRTWQikTA6Uy6G07t5wr60FyGMOWzmHJ1yknjiCuGV780039UPj0Q9
+      STRIPE_WEBHOOK_SECRET:
+      STRIPE_PUBLISHABLE_KEY:
+      STRIPE_SECRET_KEY:
     ports:
       - "3000:3000"
     restart: unless-stopped
