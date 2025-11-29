@@ -2,6 +2,7 @@ require_relative "boot"
 
 require "rails/all"
 require_relative "../app/middlewares/jwt_error_handler"
+require_relative "../app/middlewares/remove_csp_middleware"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -26,6 +27,12 @@ module SpreeV2Backend
 
     if defined?(Warden::Manager)
       config.middleware.insert_before Warden::Manager, JwtErrorHandler
+    end
+
+    # Remove CSP headers in development
+    # Insert at the end to ensure it runs after all CSP headers are set
+    if Rails.env.development?
+      config.middleware.use RemoveCspMiddleware
     end
 
     config.active_job.queue_adapter = :sidekiq

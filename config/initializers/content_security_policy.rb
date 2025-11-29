@@ -1,25 +1,20 @@
-# Be sure to restart your server when you modify this file.
+# Content Security Policy configuration
+# Completely disabled in development to allow Swagger UI to work
+# The RemoveCspMiddleware removes all CSP headers in development
 
-# Define an application-wide content security policy.
-# See the Securing Rails Applications Guide for more information:
-# https://guides.rubyonrails.org/security.html#content-security-policy-header
-
-# Rails.application.configure do
-#   config.content_security_policy do |policy|
-#     policy.default_src :self, :https
-#     policy.font_src    :self, :https, :data
-#     policy.img_src     :self, :https, :data
-#     policy.object_src  :none
-#     policy.script_src  :self, :https
-#     policy.style_src   :self, :https
-#     # Specify URI for violation reports
-#     # policy.report_uri "/csp-violation-report-endpoint"
-#   end
-#
-#   # Generate session nonces for permitted importmap, inline scripts, and inline styles.
-#   config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
-#   config.content_security_policy_nonce_directives = %w(script-src style-src)
-#
-#   # Report violations without enforcing the policy.
-#   # config.content_security_policy_report_only = true
-# end
+Rails.application.configure do
+  if Rails.env.development?
+    # Explicitly prevent Rails from setting any CSP in development
+    # This is done by not defining any CSP policy
+    # The RemoveCspMiddleware will strip any CSP headers that might be set
+  else
+    # Production CSP configuration (uncomment and configure as needed)
+    # config.content_security_policy do |policy|
+    #   policy.default_src :self, :https
+    #   policy.connect_src :self, :https
+    #   policy.script_src :self, :https
+    #   policy.style_src :self, :https
+    # end
+  end
+end
+  

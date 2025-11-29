@@ -114,3 +114,7 @@ gem "ancestry"
 gem "rspec-rails"
 
 gem "factory_bot_rails"
+
+gem "rswag"
+gem "rswag-api"
+gem "rswag-ui"
