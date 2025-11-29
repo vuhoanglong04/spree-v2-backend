@@ -5,6 +5,295 @@ info:
   version: v1
   description: API documentation for Spree V2 Backend
 paths:
+  "/api/auth/confirm_email":
+    post:
+      summary: Confirm email
+      tags:
+      - Authentication
+      description: Confirm user email with token
+      parameters: []
+      responses:
+        '200':
+          description: Email confirmed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_user:
+                  type: object
+                  properties:
+                    confirmation_token:
+                      type: string
+                  required:
+                  - confirmation_token
+  "/api/auth/resend_confirmation":
+    post:
+      summary: Resend confirmation email
+      tags:
+      - Authentication
+      description: Resend confirmation email
+      parameters: []
+      responses:
+        '200':
+          description: Confirmation email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: user@example.com
+                  required:
+                  - email
+  "/api/auth/reset_password":
+    post:
+      summary: Request password reset
+      tags:
+      - Authentication
+      description: Send password reset email
+      parameters: []
+      responses:
+        '200':
+          description: Password reset email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: user@example.com
+                  required:
+                  - email
+    patch:
+      summary: Update password
+      tags:
+      - Authentication
+      description: Reset password with token
+      parameters: []
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_user:
+                  type: object
+                  properties:
+                    reset_password_token:
+                      type: string
+                    password:
+                      type: string
+                      example: newpassword123
+                    password_confirmation:
+                      type: string
+                      example: newpassword123
+                  required:
+                  - reset_password_token
+                  - password
+                  - password_confirmation
+  "/api/auth/check_reset_password_token":
+    post:
+      summary: Check reset password token
+      tags:
+      - Authentication
+      description: Validate reset password token
+      parameters: []
+      responses:
+        '200':
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_user:
+                  type: object
+                  properties:
+                    reset_password_token:
+                      type: string
+                  required:
+                  - reset_password_token
+  "/api/auth/refresh":
+    post:
+      summary: Refresh access token
+      tags:
+      - Authentication
+      description: Refresh JWT access token using refresh token
+      parameters: []
+      responses:
+        '201':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                      refresh_token:
+                        type: string
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_user:
+                  type: object
+                  properties:
+                    refresh_token:
+                      type: string
+                  required:
+                  - refresh_token
+  "/api/auth":
+    post:
+      summary: User registration
+      tags:
+      - Authentication
+      description: Register a new user account
+      parameters: []
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                  errors:
+                    type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: longvulinhhoang1@gmail.com
+                    password:
+                      type: string
+                      example: 123456
+                    password_confirmation:
+                      type: string
+                      example: 123456
+                  required:
+                  - email
+                  - password
+                  - password_confirmation
   "/api/auth/sign_in":
     post:
       summary: User login
@@ -67,10 +356,10 @@ paths:
                   properties:
                     email:
                       type: string
-                      example: user@example.com
+                      example: longvulinhhoang@gmail.com
                     password:
                       type: string
-                      example: password123
+                      example: 123456
                   required:
                   - email
                   - password
@@ -108,6 +397,1287 @@ paths:
                   properties:
                     refresh_token:
                       type: string
+  "/api/admin/account_users":
+    get:
+      summary: List account users
+      tags:
+      - Admin Account Users
+      description: Get all account users
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Account users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      account_users:
+                        type: array
+                        items:
+                          type: object
+  "/api/admin/account_users/{id}/role":
+    get:
+      summary: Get user role
+      tags:
+      - Admin Account Users
+      description: Get role information for a user
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: User ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: User role retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      role:
+                        type: object
+  "/api/admin/categories":
+    get:
+      summary: List categories
+      tags:
+      - Admin Categories
+      description: Get all categories
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          type: object
+    post:
+      summary: Create category
+      tags:
+      - Admin Categories
+      description: Create a new category
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Category Name
+                    parent_id:
+                      type: integer
+                      nullable: true
+  "/api/admin/categories/{id}":
+    patch:
+      summary: Update category
+      tags:
+      - Admin Categories
+      description: Update a category
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Category ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+    delete:
+      summary: Delete category
+      tags:
+      - Admin Categories
+      description: Soft delete a category
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Category ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Category deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+  "/api/admin/categories/{id}/restore":
+    post:
+      summary: Restore category
+      tags:
+      - Admin Categories
+      description: Restore a soft-deleted category
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Category ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Category restored successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+  "/api/admin/categories/search/list":
+    get:
+      summary: Search categories
+      tags:
+      - Admin Categories
+      description: Search categories by query
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: query
+        in: query
+        required: false
+        description: Search query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Categories found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          type: object
+  "/api/admin/me":
+    get:
+      summary: Get current admin user
+      tags:
+      - Admin
+      description: Get current authenticated admin user information
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Admin user retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+  "/api/admin/orders":
+    get:
+      summary: List orders
+      tags:
+      - Admin Orders
+      description: Get all orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        example: 1
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      orders:
+                        type: array
+                        items:
+                          type: object
+  "/api/admin/orders/{id}":
+    patch:
+      summary: Update order
+      tags:
+      - Admin Orders
+      description: Update an order status
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Order ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      example: shipped
+  "/api/admin/products":
+    get:
+      summary: List products
+      tags:
+      - Admin Products
+      description: Get all products (including deleted)
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        example: 1
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        example: 5
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          type: object
+                  meta:
+                    type: object
+    post:
+      summary: Create product
+      tags:
+      - Admin Products
+      description: Create a new product
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      product:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Product Name
+                    description:
+                      type: string
+                    brand:
+                      type: string
+                    product_images_attributes:
+                      type: object
+                    product_variants_attributes:
+                      type: object
+  "/api/admin/products/{id}":
+    get:
+      summary: Show product
+      tags:
+      - Admin Products
+      description: Get a specific product
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Product ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      product:
+                        type: object
+    patch:
+      summary: Update product
+      tags:
+      - Admin Products
+      description: Update a product
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Product ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      product:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    description:
+                      type: string
+    delete:
+      summary: Delete product
+      tags:
+      - Admin Products
+      description: Soft delete a product
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Product ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+  "/api/admin/products/{id}/restore":
+    post:
+      summary: Restore product
+      tags:
+      - Admin Products
+      description: Restore a soft-deleted product
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Product ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Product restored successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+  "/api/admin/promotions":
+    get:
+      summary: List promotions
+      tags:
+      - Admin Promotions
+      description: Get all promotions
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Promotions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      promotions:
+                        type: array
+                        items:
+                          type: object
+    post:
+      summary: Create promotion
+      tags:
+      - Admin Promotions
+      description: Create a new promotion
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: Promotion created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      promotion:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                promotion:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Summer Sale
+                    discount_percentage:
+                      type: number
+                      example: 20.0
+  "/api/admin/promotions/{id}":
+    patch:
+      summary: Update promotion
+      tags:
+      - Admin Promotions
+      description: Update a promotion
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Promotion ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Promotion updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                promotion:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    discount_percentage:
+                      type: number
+    delete:
+      summary: Delete promotion
+      tags:
+      - Admin Promotions
+      description: Soft delete a promotion
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Promotion ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Promotion deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+  "/api/admin/promotions/{id}/restore":
+    post:
+      summary: Restore promotion
+      tags:
+      - Admin Promotions
+      description: Restore a soft-deleted promotion
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Promotion ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Promotion restored successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+  "/api/admin/roles":
+    get:
+      summary: List roles
+      tags:
+      - Admin Roles
+      description: Get all roles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Roles retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      roles:
+                        type: array
+                        items:
+                          type: object
+    post:
+      summary: Create role
+      tags:
+      - Admin Roles
+      description: Create a new role
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: Role created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      role:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: admin
+  "/api/admin/roles/{id}":
+    patch:
+      summary: Update role
+      tags:
+      - Admin Roles
+      description: Update a role
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Role ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Role updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+    delete:
+      summary: Delete role
+      tags:
+      - Admin Roles
+      description: Delete a role
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Role ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Role deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+  "/api/client/cart":
+    get:
+      summary: List cart items
+      tags:
+      - Client Cart
+      description: Get all items in the cart
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: Page number
+        example: 1
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        description: Items per page
+        example: 5
+        schema:
+          type: integer
+      - name: account_user_id
+        in: query
+        required: true
+        description: User ID
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Cart items retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      cart_items:
+                        type: array
+                        items:
+                          type: object
+    post:
+      summary: Add item to cart
+      tags:
+      - Client Cart
+      description: Add a product variant to the cart
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: Item added to cart successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      cart_item:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_user_id:
+                  type: integer
+                  example: 1
+                product_variant_id:
+                  type: integer
+                  example: 1
+                quantity:
+                  type: integer
+                  example: 2
+              required:
+              - account_user_id
+              - product_variant_id
+              - quantity
+    patch:
+      summary: Update cart items
+      tags:
+      - Client Cart
+      description: Update multiple cart items (quantity or delete)
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: Cart updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cart_items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      quantity:
+                        type: integer
+                      _destroy:
+                        type: boolean
+  "/api/client/cart/{id}":
+    delete:
+      summary: Remove item from cart
+      tags:
+      - Client Cart
+      description: Remove a specific item from the cart
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Cart item ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Item removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+  "/api/client/categories":
+    get:
+      summary: List categories
+      tags:
+      - Client Categories
+      description: Get all categories
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            name:
+                              type: string
+                            slug:
+                              type: string
+  "/api/client/home":
+    get:
+      summary: Get home page data
+      tags:
+      - Client Home
+      description: Get home page data including featured products, categories, etc.
+      responses:
+        '200':
+          description: Home data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+  "/api/client/orders":
+    get:
+      summary: List orders
+      tags:
+      - Client Orders
+      description: Get all orders for the current user
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        example: 1
+        schema:
+          type: integer
+      - name: account_user_id
+        in: query
+        required: true
+        example: 1
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      orders:
+                        type: array
+                        items:
+                          type: object
+    post:
+      summary: Create order
+      tags:
+      - Client Orders
+      description: Create a new order
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order:
+                  type: object
+                  properties:
+                    cart_item_ids:
+                      type: array
+                      items:
+                        type: integer
+                    shipping_address:
+                      type: string
+                    billing_address:
+                      type: string
+  "/api/client/orders/{id}":
+    patch:
+      summary: Update order
+      tags:
+      - Client Orders
+      description: Update an existing order
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        description: Order ID
+        example: 1
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      example: cancelled
+  "/api/client/product_attributes":
+    get:
+      summary: List product attributes
+      tags:
+      - Client Product Attributes
+      description: Get all product attributes
+      responses:
+        '200':
+          description: Product attributes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      product_attributes:
+                        type: array
+                        items:
+                          type: object
   "/api/client/products":
     get:
       summary: List products
@@ -293,9 +1863,248 @@ paths:
                     example: fail
                   message:
                     type: string
+  "/api/client/promotions":
+    get:
+      summary: Get active promotion
+      tags:
+      - Client Promotions
+      description: Get the currently active promotion
+      responses:
+        '200':
+          description: Promotion retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      promotion:
+                        type: object
+  "/api/client/user_profiles":
+    get:
+      summary: Get user profile
+      tags:
+      - Client User Profiles
+      description: Get current user profile
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      user_profile:
+                        type: object
+    patch:
+      summary: Update user profile
+      tags:
+      - Client User Profiles
+      description: Update current user profile
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      user_profile:
+                        type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_profile:
+                  type: object
+                  properties:
+                    first_name:
+                      type: string
+                      example: John
+                    last_name:
+                      type: string
+                      example: Doe
+                    phone:
+                      type: string
+                      example: "+1234567890"
+  "/api/payment/stripe":
+    post:
+      summary: Create Stripe payment session
+      tags:
+      - Payment
+      description: Create a Stripe checkout session for an order
+      parameters: []
+      responses:
+        '200':
+          description: Payment session created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: string
+                    description: Stripe checkout URL
+        '422':
+          description: Payment creation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_id:
+                  type: integer
+                  example: 1
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      stripe_price_id:
+                        type: string
+                        example: price_1234567890
+                      quantity:
+                        type: integer
+                        example: 2
+              required:
+              - order_id
+              - items
+  "/api/payment/repaid_stripe":
+    post:
+      summary: Repay with Stripe
+      tags:
+      - Payment
+      description: Create a Stripe checkout session for repaying an order
+      parameters:
+      - name: id
+        in: query
+        description: Order ID
+        example: 1
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Payment session created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                  data:
+                    type: string
+                    description: Stripe checkout URL
+  "/api/payment/stripe/web_hook":
+    post:
+      summary: Stripe webhook
+      tags:
+      - Payment
+      description: Handle Stripe webhook events
+      parameters:
+      - name: X-Stripe-Signature
+        in: header
+        description: Stripe signature header
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Webhook processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
 servers:
 - url: http://localhost:3000
   description: Development server
+tags:
+- name: Authentication
+  description: User authentication and authorization endpoints
+- name: Client Products
+  description: Product endpoints for clients
+- name: Client Cart
+  description: Shopping cart management
+- name: Client Orders
+  description: Order management for clients
+- name: Client Categories
+  description: Product categories
+- name: Client User Profiles
+  description: User profile management
+- name: Client Promotions
+  description: Promotion information
+- name: Client Home
+  description: Home page data
+- name: Client Product Attributes
+  description: Product attributes
+- name: Admin Products
+  description: Product management for admins
+- name: Admin Categories
+  description: Category management for admins
+- name: Admin Orders
+  description: Order management for admins
+- name: Admin Account Users
+  description: User account management
+- name: Admin Roles
+  description: Role management
+- name: Admin Promotions
+  description: Promotion management for admins
+- name: Admin
+  description: Admin user information
+- name: Payment
+  description: Payment processing endpoints
 components:
   securitySchemes:
     bearerAuth:

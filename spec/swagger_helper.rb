@@ -29,6 +29,25 @@ RSpec.configure do |config|
           description: 'Development server'
         }
       ],
+      tags: [
+        { name: 'Authentication', description: 'User authentication and authorization endpoints' },
+        { name: 'Client Products', description: 'Product endpoints for clients' },
+        { name: 'Client Cart', description: 'Shopping cart management' },
+        { name: 'Client Orders', description: 'Order management for clients' },
+        { name: 'Client Categories', description: 'Product categories' },
+        { name: 'Client User Profiles', description: 'User profile management' },
+        { name: 'Client Promotions', description: 'Promotion information' },
+        { name: 'Client Home', description: 'Home page data' },
+        { name: 'Client Product Attributes', description: 'Product attributes' },
+        { name: 'Admin Products', description: 'Product management for admins' },
+        { name: 'Admin Categories', description: 'Category management for admins' },
+        { name: 'Admin Orders', description: 'Order management for admins' },
+        { name: 'Admin Account Users', description: 'User account management' },
+        { name: 'Admin Roles', description: 'Role management' },
+        { name: 'Admin Promotions', description: 'Promotion management for admins' },
+        { name: 'Admin', description: 'Admin user information' },
+        { name: 'Payment', description: 'Payment processing endpoints' }
+      ],
       components: {
         securitySchemes: {
           bearerAuth: {
