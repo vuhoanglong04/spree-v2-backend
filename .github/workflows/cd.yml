@@ -37,17 +37,18 @@ jobs:
     steps:
       - name: Deploy to EC2
         run: |
-          # Create a temporary private key file
+          # Create temporary private key
           echo "${{ secrets.SERVER_SSH_KEY }}" > ec2_key.pem
           chmod 600 ec2_key.pem
-      
-          # SSH into EC2 and run commands
-          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.SERVER_HOST }} 
-          
-          #Pull latest web image and restart docker compose
-          docker compose pull web &&
-          echo ${{ secrets.DOCKER_USERNAME }} && 
-          docker compose restart web || true
-          
-          #Remove ec2_key pem
-          rm -f ec2_key.pem
+  
+          # SSH into EC2 and run deployment commands
+          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.SERVER_HOST }} << 'EOF'
+            echo "Pulling latest image..."
+            docker compose pull web
+  
+            echo "Restarting service..."
+            docker compose up -d web
+          EOF
+
+      - name: Remove pem file
+        run: rm -f ec2_key.pem
