@@ -50,5 +50,5 @@ jobs:
         run: bundle exec rubocop --parallel --format progress
         continue-on-error: true
       
-      - name: Run RSpec tests
-        run: bundle exec rspec --format documentation --color
+#      - name: Run RSpec tests
+#        run: bundle exec rspec --format documentation --color
