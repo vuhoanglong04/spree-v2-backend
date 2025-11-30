@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - main
-
+  workflow_run:
+    workflows: [ "CI" ]
+    types:
+      - completed
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -42,7 +45,8 @@ jobs:
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.SERVER_HOST }} 
           
           #Pull latest web image and restart docker compose
-          docker pull ${{ secrets.DOCKER_USERNAME }}/spree-v2-backend:latest &&
+          docker-compose pull web &&
+          echo ${{ secrets.DOCKER_USERNAME }} && 
           docker-compose restart web || true
           
           #Remove ec2_key pem
