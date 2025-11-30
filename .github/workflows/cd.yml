@@ -39,7 +39,7 @@ jobs:
           chmod 600 ec2_key.pem
       
           # SSH into EC2 and run commands
-          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{SERVER_HOST}} "echo 'Connected successfully!'"
+          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{secrets.SERVER_HOST}} "echo 'Connected successfully!'"
       
           # Optionally remove the key after use
           rm -f ec2_key.pem
