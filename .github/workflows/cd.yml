@@ -45,9 +45,9 @@ jobs:
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.SERVER_HOST }} 
           
           #Pull latest web image and restart docker compose
-          docker-compose pull web &&
+          docker compose pull web &&
           echo ${{ secrets.DOCKER_USERNAME }} && 
-          docker-compose restart web || true
+          docker compose restart web || true
           
           #Remove ec2_key pem
           rm -f ec2_key.pem
