@@ -39,7 +39,11 @@ jobs:
           chmod 600 ec2_key.pem
       
           # SSH into EC2 and run commands
-          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{secrets.SERVER_HOST}} "echo 'Connected successfully!'"
-      
-          # Optionally remove the key after use
+          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.SERVER_HOST }} 
+          
+          #Pull latest web image and restart docker compose
+          docker pull ${{ secrets.DOCKER_USERNAME }}/spree-v2-backend:latest &&
+          docker-compose restart web || true
+          
+          #Remove ec2_key pem
           rm -f ec2_key.pem
