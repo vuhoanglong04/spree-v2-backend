@@ -51,7 +51,7 @@ services:
     command: bundle exec sidekiq -C config/sidekiq.yml
     environment:
       RAILS_ENV: production
-      DATABASE_URL: postgres://postgres:longdz2004@spree-database.cdgsoesqu0gs.ap-southeast-2.rds.amazonaws.com:5432/spree_v2_development
+      DATABASE_URL: postgres://postgres:longdz2004@spree-database.cdgsoesqu0gs.ap-southeast-2.rds.amazonaws.com:5432/spree_v2_development #TEMP KEY FOR FAST TESTING
       REDIS_URL: redis://redis:6379/0
     networks:
       - health-app
